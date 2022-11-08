@@ -13,6 +13,8 @@ import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireStorageModule } from '@angular/fire/compat/storage';
 import { environment } from '../environments/environment';
+import { HomeModule } from './home/home.module';
+import { FormsModule } from './forms/forms.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -27,6 +29,8 @@ import { environment } from '../environments/environment';
     AngularFirestoreModule,
     AngularFireStorageModule,
     AngularFireDatabaseModule,
+    HomeModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent],
