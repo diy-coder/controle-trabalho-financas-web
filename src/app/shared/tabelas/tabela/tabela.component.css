@@ -20,3 +20,8 @@ tr.linha-coluna:not(.example-expanded-row):active {
 thead {
   background-color: #6fbce0a3 !important;
 }
+
+.title-caption {
+  margin-top: auto;
+  margin-bottom: auto;
+}

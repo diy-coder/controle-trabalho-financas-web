@@ -1,22 +1,18 @@
-<div class="main-content" [class.mt-3]="marginTop">
+<div class="main-content">
   <div class="container-fluid">
     <div class="row">
-      <div class="col-xl-10 offset-xl-1 col-lg-10 offset-lg-1 col-md-12">
+      <div class="col-md-12">
         <div class="card">
-          <div class="header" *ngIf="showHeader">
-            <div class="row mt-3">
-              <div class="form-group col-md-6">
-                <h4 class="title">{{ headerTitle }}</h4>
+          <div class="card-header" *ngIf="showHeader">
+            <div class="row">
+              <div class="col-md-10 title-caption">
+                <h4 class="card-title">{{ headerTitle }}</h4>
               </div>
-              <div
-                class="form-group col-md-6 d-flex flex-row-reverse"
-                *ngIf="showAddButtom"
-              >
+              <div class="col-md-2 d-flex flex-row-reverse">
                 <button
                   mat-button
                   class="btn btn-info btn-fill"
-                  style="margin-right: 1%"
-                  (click)="propagate('add-new', '')"
+                  (click)="propagate($event, 'add-new', '')"
                 >
                   Adicionar Registro
                 </button>
@@ -65,7 +61,7 @@
                         <ng-template #icones>
                           <img
                             *ngFor="let acao of col.botoes"
-                            (click)="propagate(acao.acao, element)"
+                            (click)="propagate($event, acao.acao, element)"
                             [src]="'/assets/img/' + acao.icone"
                             [alt]="acao.title"
                             [title]="acao.title"

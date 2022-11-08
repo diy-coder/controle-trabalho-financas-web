@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { Injector, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { MatIconModule } from '@angular/material/icon';
@@ -12,10 +12,12 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireStorageModule } from '@angular/fire/compat/storage';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { environment } from '../environments/environment';
-import { HomeModule } from './home/home.module';
 import { FormsModule } from './forms/forms.module';
-
+import { HomeModule } from './home/home.module';
+import { ServiceLocator } from './services/service.locator';
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -30,9 +32,15 @@ import { FormsModule } from './forms/forms.module';
     AngularFireStorageModule,
     AngularFireDatabaseModule,
     HomeModule,
-    FormsModule
+    FormsModule,
+    MatCardModule,
+    MatButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private injector: Injector) {
+    ServiceLocator.injector = this.injector;
+  }
+}

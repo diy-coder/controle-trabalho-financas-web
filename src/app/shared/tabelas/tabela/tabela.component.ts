@@ -67,9 +67,9 @@ export class TabelaComponent implements OnInit, AfterContentInit {
     this.selectedRow.emit(row);
   }
 
-  propagate(acao: any, item: any) {
+  propagate(e: Event, acao: any, item: any) {
     this.selectedRowIndex = -1;
-    //event.stopImmediatePropagation();
+    e.stopImmediatePropagation();
     this.acaoSelecionada.emit({ acao, item });
   }
 }
