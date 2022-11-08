@@ -45,8 +45,6 @@ export class ClienteListaComponent implements OnInit {
   }
 
   onRowSelect($event: any) {
-    console.log($event);
-    
     if (!$event) {
       return;
     }
