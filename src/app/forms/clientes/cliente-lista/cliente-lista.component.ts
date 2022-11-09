@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { DocumentChangeAction } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
-import { map, Observable, of, tap } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import { MustConfirm } from 'src/app/decorators/must-confirm.decorators';
 import { ClienteModel } from 'src/app/models/clienteModel';
+import { NotificationService } from 'src/app/shared/notification/notification.service';
 import { ClienteService } from '../clientes.service';
 
 @Component({
@@ -30,7 +31,11 @@ export class ClienteListaComponent implements OnInit {
     { head: 'Ações', el: 'actions', botoes: this.botoes },
   ];
 
-  constructor(private router: Router, private clienteService: ClienteService) {}
+  constructor(
+    private router: Router,
+    private clienteService: ClienteService,
+    private notificationService: NotificationService
+  ) {}
 
   ngOnInit(): void {
     this.loadData();
@@ -39,7 +44,7 @@ export class ClienteListaComponent implements OnInit {
   loadData() {
     this.clienteService
       .getAll()
-      .snapshotChanges() 
+      .snapshotChanges()
       .pipe(
         map((changes: DocumentChangeAction<ClienteModel>[]) =>
           changes.map((c: DocumentChangeAction<ClienteModel>) => ({
@@ -49,8 +54,6 @@ export class ClienteListaComponent implements OnInit {
         )
       )
       .subscribe((data) => {
-        console.log(data);
-        
         this.data$ = of(data);
       });
   }
@@ -59,7 +62,7 @@ export class ClienteListaComponent implements OnInit {
     if (!$event) {
       return;
     }
-    this.router.navigate(['clientes/' + $event.documentId]);
+    this.router.navigate(['clientes/' + $event.id]);
   }
 
   executarAcao(acaoPropagate: any) {
@@ -69,12 +72,15 @@ export class ClienteListaComponent implements OnInit {
         this.router.navigate(['clientes/0']);
         break;
       case 'excluir':
-        this.excluirItem();
+        this.excluirItem(this.itemSelecionado.id);
     }
   }
 
   @MustConfirm('Mensagem de Confirmação antes de exclusão')
-  excluirItem() {
-    console.log('Item foi excluido');
+  excluirItem(identifier: string) {
+    this.clienteService.delete(identifier).then(() => {
+      this.notificationService.showSucess('Registro deletado com Sucesso');
+      this.loadData();
+    });
   }
 }

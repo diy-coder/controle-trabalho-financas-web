@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {
   AngularFirestore,
   AngularFirestoreCollection,
+  AngularFirestoreDocument,
   DocumentReference,
 } from '@angular/fire/compat/firestore';
 import { ClienteModel } from 'src/app/models/clienteModel';
@@ -18,6 +19,10 @@ export class ClienteService {
 
   getAll(): AngularFirestoreCollection<ClienteModel> {
     return this.clientesRef;
+  }
+
+  getById(identifier: string): AngularFirestoreDocument<ClienteModel> {
+    return this.clientesRef.doc(identifier);
   }
 
   save(clienteModel: ClienteModel): Promise<DocumentReference<ClienteModel>> {

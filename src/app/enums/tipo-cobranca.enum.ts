@@ -1,5 +1,5 @@
-export enum TipoCobrancaEnum{
-    DIARIA,
-    PROJETO,
-    MENSAL
+export enum TipoCobrancaEnum {
+  DIARIA = 'Diaria',
+  PROJETO = 'Por Projeto',
+  MENSAL = 'Mensal',
 }

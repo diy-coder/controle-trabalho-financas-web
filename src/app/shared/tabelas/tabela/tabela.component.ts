@@ -3,23 +3,27 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnInit,
   Output,
+  SimpleChanges,
   ViewChild,
-} from "@angular/core";
-import { MatPaginator } from "@angular/material/paginator";
-import { MatTableDataSource } from "@angular/material/table";
+} from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
-  selector: "app-tabela",
-  templateUrl: "./tabela.component.html",
-  styleUrls: ["./tabela.component.css"],
+  selector: 'app-tabela',
+  templateUrl: './tabela.component.html',
+  styleUrls: ['./tabela.component.css'],
 })
-export class TabelaComponent implements OnInit, AfterContentInit {
-  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator | undefined;
+export class TabelaComponent implements OnInit, AfterContentInit, OnChanges {
+  @ViewChild(MatPaginator, { static: true }) paginator:
+    | MatPaginator
+    | undefined;
 
-  @Input() headerTitle = "Listagem Generica.";
-  @Input() displayedColumns:any[] = [];
+  @Input() headerTitle = 'Listagem Generica.';
+  @Input() displayedColumns: any[] = [];
   @Input() pageSizeOptions = [10, 20, 30, 50];
   @Input() dados: any[] | undefined;
   @Input() showHeader = true;
@@ -31,14 +35,24 @@ export class TabelaComponent implements OnInit, AfterContentInit {
   @Output() selectedRow = new EventEmitter();
   @Output() acaoSelecionada = new EventEmitter();
 
-  datasource!:any;
-  cols:any[] = [];
+  datasource!: any;
+  cols: any[] = [];
   selectedRowIndex = -1;
 
   constructor() {}
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['dados']) {
+      this.loadData(changes['dados'].currentValue);
+    }
+  }
+
   ngAfterContentInit(): void {
-    this.datasource = new MatTableDataSource<any>(this.dados);
+    this.loadData(this.dados);
+  }
+
+  loadData(dados: any) {
+    this.datasource = new MatTableDataSource<any>(dados);
     this.datasource.paginator = this.paginator;
     this.cols = this.displayedColumns.map((el: any) => el.el);
   }
@@ -56,7 +70,7 @@ export class TabelaComponent implements OnInit, AfterContentInit {
     this.selectedRow.emit(null);
   }
 
-  highlight(row:any) {
+  highlight(row: any) {
     let newIndex = row[this.displayedColumns[0].el];
     if (newIndex == this.selectedRowIndex) {
       this.selectedRowIndex = -1;

@@ -14,7 +14,7 @@ const routes: Routes = [
     component: ClienteListaComponent,
   },
   {
-    path: 'clientes/:identificador',
+    path: 'clientes/:identifier',
     component: ClienteFormComponent,
   },
   {

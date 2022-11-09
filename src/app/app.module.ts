@@ -14,6 +14,7 @@ import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireStorageModule } from '@angular/fire/compat/storage';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { ToastrModule } from 'ngx-toastr';
 import { environment } from '../environments/environment';
 import { FormsModule } from './forms/forms.module';
 import { HomeModule } from './home/home.module';
@@ -34,7 +35,8 @@ import { ServiceLocator } from './services/service.locator';
     HomeModule,
     FormsModule,
     MatCardModule,
-    MatButtonModule
+    MatButtonModule,
+    ToastrModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent],

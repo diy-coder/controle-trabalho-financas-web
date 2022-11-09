@@ -1,93 +1,63 @@
 import { Injectable } from "@angular/core";
-import { ToastrService } from "ngx-toastr";
+
+declare var $: any;
+
+export enum NotificationType {
+  info = "info",
+  success = "success",
+  warning = "warning",
+  danger = "danger",
+}
 
 @Injectable({ providedIn: "root" })
-export class MenssageService {
-  private position = "top";
-  private align = "right";
-  private title = "";
+export class NotificationService {
+  constructor() {}
 
-  constructor(private toastr: ToastrService) {}
-
-  public showInfo(
-    message: string,
-    title?: string,
-    position?: string,
-    align?: string
-  ) {
-    this.show(message, title, position, align, "alert-info", "toast-info");
+  showSucess(message: string) {
+    this.showNotification(NotificationType.success, "Sucesso", message);
   }
 
-  public showError(
-    message: string,
-    title?: string,
-    position?: string,
-    align?: string
-  ) {
-    this.show(
-      message,
-      title ? title : "Por favor Verifique",
-      position,
-      align,
-      "alert-danger",
-      "toast-error"
-    );
+  showInfo(message: string) {
+    this.showNotification(NotificationType.success, "Atenção", message);
   }
 
-  public showSucess(
-    message: string,
-    title?: string,
-    position?: string,
-    align?: string
-  ) {
-    this.show(
-      message,
-      title ? title : "Sucesso!!!",
-      position,
-      align,
-      "alert-success",
-      "toast-success"
-    );
+  showError(message: string) {
+    this.showNotification(NotificationType.success, "Um erro ocorreu", message);
   }
 
-  public showWarning(
-    message: string,
-    title?: string,
-    position?: string,
-    align?: string
-  ) {
-    this.show(
-      message,
-      title,
-      position,
-      align,
-      "alert-warning",
-      "toast-warning"
-    );
-  }
-
-  private show(message, title, position, align, tipoIcone, tipoAlerta) {
-    if (position) {
-      this.position = position;
-    }
-    if (align) {
-      this.align = align;
-    }
-    if (title) {
-      this.title = title;
-    }
-
-    this.toastr.show(
-      message,
-      this.title,
+  showNotification(type: NotificationType, title: string, message: string) {
+    $.notify(
       {
-        timeOut: 5000,
-        closeButton: true,
-        enableHtml: true,
-        toastClass: "alert " + tipoAlerta + " alert-with-icon",
-        positionClass: "toast-" + this.position + "-" + this.align,
+        icon: "notifications",
+        title: title,
+        message: message,
       },
-      tipoAlerta
+      {
+        type: type.toString(),
+        delay: 1000,
+        timer: 2000,
+        placement: {
+          from: "top",
+          align: "center",
+        },
+        template:
+          '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+          '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+          '<div class="row">' +
+          '<div class="col-md-1">' +
+          '<i class="material-icons" data-notify="icon">notifications</i> ' +
+          '</div>'+
+          '<div class="col-md-11">' +
+          '<span data-notify="title" class="notification-title" style="font-weight: bold; font-size: 1.3em; margin-bottom: 1%;">{1}</span> ' +
+          '<span data-notify="message">{2}</span>' +
+          '<div class="progress" data-notify="progressbar">' +
+          '<div class="progress-bar progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+          "</div>" +
+          '<a href="{3}" target="{4}" data-notify="url"></a>' +
+          '</div>'+
+          "</div>" +
+          "</div>",
+      }
     );
   }
 }

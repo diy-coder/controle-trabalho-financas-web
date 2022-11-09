@@ -8,7 +8,7 @@
               class="col-md-10 caption"
               style="margin-top: auto; margin-bottom: auto"
             >
-              Manage Labels
+              Inserir / Cadastrar Novo Cliente
             </div>
             <div class="col-md-2 d-flex flex-row-reverse">
               <button
@@ -82,6 +82,93 @@
                 </mat-form-field>
               </div>
             </div>
+
+            <div class="row">
+              <div class="col-md-3">
+                <mat-form-field>
+                  <mat-label>Tipo de Cobrança</mat-label>
+                  <mat-select formControlName="tipoCobranca">
+                    <mat-option
+                      *ngFor="let enum of tipoCobrancaEnum | keyvalue"
+                      [value]="enum.key"
+                    >
+                      {{ enum.value }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-md-3">
+                <mat-form-field>
+                  <mat-label>Ultimo Valor Cobrado</mat-label>
+                  <input matInput formControlName="ultimoValorCobrado" />
+                </mat-form-field>
+              </div>
+              <div class="col-md-3">
+                <mat-form-field>
+                  <mat-label>Total Recebido</mat-label>
+                  <input matInput formControlName="totalRecebido" />
+                </mat-form-field>
+              </div>
+              <div class="col-md-3">
+                <mat-form-field>
+                  <mat-label>Total de Projetos</mat-label>
+                  <input matInput formControlName="projetosTotal" />
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-3">
+                <mat-form-field>
+                  <mat-label>Início do Último Projeto</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="ultimoProjetoInicioPicker"
+                    formControlName="ultimoProjetoInicio"
+                  />
+                  <mat-hint>MM/DD/YYYY</mat-hint>
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="ultimoProjetoInicioPicker"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #ultimoProjetoInicioPicker></mat-datepicker>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-3">
+                <mat-form-field>
+                  <mat-label>Entrega do Último Projeto</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="ultimoProjetoEntregaPicker"
+                    formControlName="ultimoProjetoEntrega"
+                  />
+                  <mat-hint>MM/DD/YYYY</mat-hint>
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="ultimoProjetoEntregaPicker"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #ultimoProjetoEntregaPicker></mat-datepicker>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-3">
+                <mat-form-field>
+                  <mat-label>Data do Primeiro Contato</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="dataPrimeiroContatoPicker"
+                    formControlName="dataPrimeiroContato"
+                  />
+                  <mat-hint>MM/DD/YYYY</mat-hint>
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="dataPrimeiroContatoPicker"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #dataPrimeiroContatoPicker></mat-datepicker>
+                </mat-form-field>
+              </div>
+            </div>
           </form>
         </div>
         <div class="footer">
@@ -101,7 +188,7 @@
         mat-raised-button
         color="primary"
         style="width: 100%"
-        (click)="save()"
+        (click)="saveEntry()"
         [disabled]="!clienteForm.valid"
       >
         Save
