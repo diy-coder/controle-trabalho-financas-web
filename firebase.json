@@ -1,0 +1,10 @@
+{
+  "hosting": {
+    "public": "dist/controle-trabalho-financas",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
