@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { DocumentChangeAction } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
-import { Observable, of } from 'rxjs';
+import { map, Observable, of, tap } from 'rxjs';
 import { MustConfirm } from 'src/app/decorators/must-confirm.decorators';
+import { ClienteModel } from 'src/app/models/clienteModel';
+import { ClienteService } from '../clientes.service';
 
 @Component({
   selector: 'app-cliente-lista',
@@ -22,26 +25,34 @@ export class ClienteListaComponent implements OnInit {
   ];
 
   displayedColumns = [
-    { head: 'Id', el: 'id' },
-    { head: 'Name', el: 'name' },
-    { head: 'Description', el: 'description' },
+    { head: 'Cliente', el: 'cliente' },
+    { head: 'País', el: 'local' },
     { head: 'Ações', el: 'actions', botoes: this.botoes },
   ];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private clienteService: ClienteService) {}
 
   ngOnInit(): void {
     this.loadData();
   }
 
   loadData() {
-    this.data$ = of([
-      {
-        id: 1,
-        name: 'Arnold',
-        description: 'Backend developer at Mindera',
-      },
-    ]);
+    this.clienteService
+      .getAll()
+      .snapshotChanges() 
+      .pipe(
+        map((changes: DocumentChangeAction<ClienteModel>[]) =>
+          changes.map((c: DocumentChangeAction<ClienteModel>) => ({
+            id: c.payload.doc.id,
+            ...c.payload.doc.data(),
+          }))
+        )
+      )
+      .subscribe((data) => {
+        console.log(data);
+        
+        this.data$ = of(data);
+      });
   }
 
   onRowSelect($event: any) {

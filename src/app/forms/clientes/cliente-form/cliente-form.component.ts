@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
+import { StatusClienteEnum } from 'src/app/enums/status-cliente.enum';
+import { ClienteService } from '../clientes.service';
 
 @Component({
   selector: 'app-cliente-form',
@@ -9,10 +11,17 @@ import { Router } from '@angular/router';
 })
 export class ClienteFormComponent implements OnInit {
   clienteFormGroup!: FormGroup;
+  statusClienteEnum: any = StatusClienteEnum;
 
-  constructor(private router: Router, private formBuilder: FormBuilder) {}
+  constructor(
+    private router: Router,
+    private formBuilder: FormBuilder,
+    private clienteService: ClienteService
+  ) {}
 
   ngOnInit(): void {
+    console.log(this.statusClienteEnum[0]);
+    
     this.construirFormulario();
   }
 
@@ -20,14 +29,32 @@ export class ClienteFormComponent implements OnInit {
     this.router.navigate(['clientes']);
   }
 
-  save() {}
+  save() {
+    const clienteModelData = this.clienteFormGroup.getRawValue();
+    console.log(clienteModelData);
+
+    this.clienteService.save(clienteModelData).then((data) => {
+      console.log('Successfully created');
+      console.log(data);
+    });
+  }
 
   private construirFormulario() {
     this.clienteFormGroup = this.formBuilder.group({
-      documentId: [],
-      id: [{ value: '', disabled: true }],
-      name: ['', Validators.minLength(5)],
-      description: ['', Validators.required],
+      cliente: [''],
+      local: [''],
+      emailResponsavel: [''],
+      emailFinanceiro: [''],
+      comoMeEncontrou: [''],
+      quemIndicou: [''],
+      status: [''],
+      tipoCobranca: [''],
+      ultimoValorCobrado: [''],
+      totalRecebido: [''],
+      projetosTotal: [''],
+      ultimoProjetoInicio: [''],
+      ultimoProjetoEntrega: [''],
+      dataPrimeiroContato: [''],
     });
   }
 }
