@@ -1,0 +1,27 @@
+a[data-toggle="collapse"][aria-expanded="true"] .caret {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+
+.nav-item .collapse {
+  background-color: #cbddff;
+  border-radius: 15px;
+  width: 95%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-bottom: 10px;
+  padding-top: 1px;
+  margin-top: 10px;
+}
+
+.nav-item .collapsing {
+  background-color: #cbddff;
+  border-radius: 15px;
+  width: 95%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-bottom: 10px;
+  padding-top: 1px;
+  margin-top: 10px;
+}
