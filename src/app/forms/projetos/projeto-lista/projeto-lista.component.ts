@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { map, Observable, of } from 'rxjs';
 import { MustConfirm } from 'src/app/decorators/must-confirm.decorators';
 import { ProjetoModel } from 'src/app/models/projetoModel';
+import { LoadingService } from 'src/app/services/loading-service';
 import { NotificationService } from 'src/app/shared/notification/notification.service';
 import { ProjetoService } from '../projetos.service';
 
@@ -35,7 +36,8 @@ export class ProjetoListaComponent implements OnInit {
   constructor(
     private router: Router,
     private service: ProjetoService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private loadingService: LoadingService
   ) {}
 
   ngOnInit(): void {
@@ -43,6 +45,10 @@ export class ProjetoListaComponent implements OnInit {
   }
 
   loadData() {
+    setTimeout(() => {
+      this.loadingService.setLoading(true);
+    }, 0);
+
     this.service
       .getAll()
       .snapshotChanges()
@@ -56,6 +62,7 @@ export class ProjetoListaComponent implements OnInit {
       )
       .subscribe((data) => {
         this.data$ = of(data);
+        this.loadingService.setLoading(false);
       });
   }
 

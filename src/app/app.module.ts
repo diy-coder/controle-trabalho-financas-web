@@ -15,14 +15,15 @@ import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireStorageModule } from '@angular/fire/compat/storage';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 import { ToastrModule } from 'ngx-toastr';
 import { environment } from '../environments/environment';
 import { CoreModule } from './core/core.module';
 import { FormsModule } from './forms/forms.module';
 import { HomeModule } from './home/home.module';
+import { LoadingService } from './services/loading-service';
 import { ServiceLocator } from './services/service.locator';
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
 
 export const app = initializeApp(environment.firebaseConfig);
 export const auth = getAuth(app);
@@ -48,7 +49,7 @@ export const auth = getAuth(app);
     CoreModule,
     ToastrModule.forRoot(),
   ],
-  providers: [],
+  providers: [LoadingService],
   bootstrap: [AppComponent],
 })
 export class AppModule {

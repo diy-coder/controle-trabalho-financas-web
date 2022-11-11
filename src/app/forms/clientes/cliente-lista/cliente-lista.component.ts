@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { map, Observable, of } from 'rxjs';
 import { MustConfirm } from 'src/app/decorators/must-confirm.decorators';
 import { ClienteModel } from 'src/app/models/clienteModel';
+import { LoadingService } from 'src/app/services/loading-service';
 import { NotificationService } from 'src/app/shared/notification/notification.service';
 import { ClienteService } from '../clientes.service';
 
@@ -34,7 +35,8 @@ export class ClienteListaComponent implements OnInit {
   constructor(
     private router: Router,
     private clienteService: ClienteService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private loadingService: LoadingService
   ) {}
 
   ngOnInit(): void {
@@ -42,6 +44,10 @@ export class ClienteListaComponent implements OnInit {
   }
 
   loadData() {
+    setTimeout(() => {
+      this.loadingService.setLoading(true);
+    }, 0);
+    
     this.clienteService
       .getAll()
       .snapshotChanges()
@@ -55,6 +61,7 @@ export class ClienteListaComponent implements OnInit {
       )
       .subscribe((data) => {
         this.data$ = of(data);
+        this.loadingService.setLoading(false);
       });
   }
 

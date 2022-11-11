@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { UserService } from './core/user/user.service';
+import { LoadingService } from './services/loading-service';
 
 @Component({
   selector: 'app-root',
@@ -9,5 +10,5 @@ import { UserService } from './core/user/user.service';
 export class AppComponent {
   title = 'controle-trabalho-financas';
 
-  constructor(readonly userService: UserService) {}
+  constructor(readonly userService: UserService, public loadingService: LoadingService) {}
 }
