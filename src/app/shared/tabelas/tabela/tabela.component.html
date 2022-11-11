@@ -8,7 +8,7 @@
               <div class="col-md-10 title-caption">
                 <h4 class="card-title">{{ headerTitle }}</h4>
               </div>
-              <div class="col-md-2 d-flex flex-row-reverse">
+              <div class="col-md-2 d-flex flex-row-reverse" *ngIf="showAddButtom">
                 <button
                   mat-button
                   class="btn btn-info btn-fill"

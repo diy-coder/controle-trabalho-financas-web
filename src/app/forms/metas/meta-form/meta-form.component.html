@@ -1,0 +1,162 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12 scroll-95">
+      <div class="card">
+        <div class="card-header">
+          <div class="row">
+            <div
+              class="col-md-10 caption"
+              style="margin-top: auto; margin-bottom: auto"
+            >
+              Inserir / Cadastrar Nova Meta
+            </div>
+            <div class="col-md-2 d-flex flex-row-reverse">
+              <button
+                mat-button
+                class="btn btn-info btn-fill"
+                (click)="backToList()"
+              >
+                Voltar para a Listagem
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="content">
+          <form [formGroup]="metaFormGroup" #metaForm="ngForm">
+            <div class="row">
+              <div class="col-md-3">
+                <mat-form-field>
+                  <mat-label>Nome</mat-label>
+                  <input matInput formControlName="nome" />
+                </mat-form-field>
+              </div>
+              <div class="col-md-6">
+                <mat-form-field>
+                  <mat-label>Descrição</mat-label>
+                  <input matInput formControlName="descricao" />
+                </mat-form-field>
+              </div>
+              <div class="col-md-3">
+                <mat-form-field>
+                  <mat-label>Prazo</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="prazoPicker"
+                    formControlName="prazo"
+                  />
+                  <mat-hint>MM/DD/YYYY</mat-hint>
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="prazoPicker"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #prazoPicker></mat-datepicker>
+                </mat-form-field>
+              </div>
+            </div>
+          </form>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="row">
+                <div
+                  class="col-md-10 caption"
+                  style="margin-top: auto; margin-bottom: auto"
+                >
+                  Items da Meta
+                </div>
+              </div>
+            </div>
+            <div class="content">
+              <form [formGroup]="metaItemsFormGroup" #metaItemsForm="ngForm">
+                <div class="row">
+                  <div class="col-md-4">
+                    <mat-form-field>
+                      <mat-label>Produto</mat-label>
+                      <input matInput formControlName="produto" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-2">
+                    <mat-form-field>
+                      <mat-label>Valor Unitário</mat-label>
+                      <input matInput formControlName="valorUnitario" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-1">
+                    <mat-form-field>
+                      <mat-label>Quantidade</mat-label>
+                      <input matInput formControlName="quantidade" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-2">
+                    <mat-form-field>
+                      <mat-label>Valor Total</mat-label>
+                      <input matInput formControlName="valorTotal" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-3">
+                    <mat-form-field>
+                      <mat-label>Tipo de Meta</mat-label>
+                      <mat-select formControlName="tipoMeta">
+                        <mat-option
+                          *ngFor="let enum of tipoMetaEnum | keyvalue"
+                          [value]="enum.key"
+                        >
+                          {{ enum.value }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="row col-md-12 d-flex flex-row-reverse">
+                  <div class="col-md-2">
+                    <button
+                      mat-raised-button
+                      color="primary"
+                      style="width: 100%"
+                      (click)="addMetaItem()"
+                      [disabled]="!metaItemsForm.valid"
+                    >
+                      Adicionar Item
+                    </button>
+                  </div>
+                </div>
+                <div class="row">
+                  <app-tabela
+                    class="col-md-12"
+                    [displayedColumns]="displayedColumns"
+                    [dados]="metaItemList"
+                    [headerTitle]="'Lista de Metas cadastrados no Sistema'"
+                    [showHeader]="false"
+                    [showFilter]="false"
+                    (acaoSelecionada)="executarAcao($event)"
+                  ></app-tabela>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="footer">
+          <div class="stats">
+            <i class="fa fa-history"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row col-md-12 d-flex flex-row-reverse">
+    <div class="col-md-2">
+      <button
+        mat-raised-button
+        color="primary"
+        style="width: 100%"
+        (click)="saveEntry()"
+        [disabled]="!metaForm.valid"
+      >
+        Save
+      </button>
+    </div>
+  </div>
+</div>

@@ -49,9 +49,11 @@ export class ProjetoFormComponent implements OnInit {
         .subscribe((data) => {
           const formData = data.payload.data();
           if (formData) {
-            formData.inicioPrevisto = (
-              formData.inicioPrevisto as unknown as firebase.default.firestore.Timestamp
-            ).toDate();
+            if (formData.inicioPrevisto) {
+              formData.inicioPrevisto = (
+                formData.inicioPrevisto as unknown as firebase.default.firestore.Timestamp
+              ).toDate();
+            }
             this.projetoFormGroup.patchValue(formData);
           }
         });

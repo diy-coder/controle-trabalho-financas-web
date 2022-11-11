@@ -22,7 +22,6 @@ export const ROUTES: RouteInfo[] = [
     subItems: [],
     descricao: 'Início',
   },
-
   {
     id: null,
     path: '/clientes',
@@ -40,6 +39,15 @@ export const ROUTES: RouteInfo[] = [
     class: '',
     subItems: [],
     descricao: 'Lista de Projetos',
+  },
+  {
+    id: null,
+    path: '/metas',
+    title: 'metas',
+    icon: 'account_balance',
+    class: '',
+    subItems: [],
+    descricao: 'Lista de Metas',
   },
   /**
   {

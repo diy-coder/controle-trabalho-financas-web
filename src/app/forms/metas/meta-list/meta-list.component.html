@@ -1,0 +1,9 @@
+<app-tabela
+  *ngIf="data$ | async as data"
+  [displayedColumns]="displayedColumns"
+  [dados]="data"
+  [headerTitle]="'Lista de Metas cadastrados no Sistema'"
+  (selectedRow)="onRowSelect($event)"
+  [showAddButtom]="true"
+  (acaoSelecionada)="executarAcao($event)"
+></app-tabela>
