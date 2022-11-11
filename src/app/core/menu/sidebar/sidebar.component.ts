@@ -32,6 +32,15 @@ export const ROUTES: RouteInfo[] = [
     subItems: [],
     descricao: 'Lista de Clientes',
   },
+  {
+    id: null,
+    path: '/projetos',
+    title: 'Projetos',
+    icon: 'design_services',
+    class: '',
+    subItems: [],
+    descricao: 'Lista de Projetos',
+  },
   /**
   {
     id: "curva-abc",

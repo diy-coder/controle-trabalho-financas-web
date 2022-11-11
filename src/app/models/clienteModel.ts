@@ -3,6 +3,7 @@ import { StatusClienteEnum } from '../enums/status-cliente.enum';
 import { TipoCobrancaEnum } from '../enums/tipo-cobranca.enum';
 
 export interface ClienteModel {
+  cliente: string;
   local: string;
   emailResponsavel: string;
   emailFinanceiro: string;

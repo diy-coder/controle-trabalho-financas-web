@@ -4,6 +4,8 @@ import { AuthGuard } from './core/auth/auth.guard';
 import { SigninComponent } from './core/signin/signin.component';
 import { ClienteFormComponent } from './forms/clientes/cliente-form/cliente-form.component';
 import { ClienteListaComponent } from './forms/clientes/cliente-lista/cliente-lista.component';
+import { ProjetoFormComponent } from './forms/projetos/projeto-form/projeto-form.component';
+import { ProjetoListaComponent } from './forms/projetos/projeto-lista/projeto-lista.component';
 import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [
@@ -20,6 +22,15 @@ const routes: Routes = [
   {
     path: 'clientes/:identifier',
     component: ClienteFormComponent,
+  },
+  {
+    path: 'projetos',
+    component: ProjetoListaComponent,
+    canActivate:[AuthGuard]
+  },
+  {
+    path: 'projetos/:identifier',
+    component: ProjetoFormComponent,
   },
   {
     path: 'sign-in',
