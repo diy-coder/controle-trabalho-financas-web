@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, of, Timestamp } from 'rxjs';
+import 'firebase/compat/auth'; //v9
+import { Observable, of } from 'rxjs';
 import { ClienteModel } from 'src/app/models/clienteModel';
 import { ProjetoModel } from 'src/app/models/projetoModel';
 import { NotificationService } from 'src/app/shared/notification/notification.service';
 import { ClienteService } from '../../clientes/clientes.service';
 import { ProjetoService } from '../projetos.service';
-import 'firebase/compat/auth'; //v9
 @Component({
   selector: 'app-projeto-form',
   templateUrl: './projeto-form.component.html',
@@ -49,7 +49,9 @@ export class ProjetoFormComponent implements OnInit {
         .subscribe((data) => {
           const formData = data.payload.data();
           if (formData) {
-            formData.inicioPrevisto = (formData.inicioPrevisto as unknown as firebase.default.firestore.Timestamp).toDate()
+            formData.inicioPrevisto = (
+              formData.inicioPrevisto as unknown as firebase.default.firestore.Timestamp
+            ).toDate();
             this.projetoFormGroup.patchValue(formData);
           }
         });
@@ -91,6 +93,7 @@ export class ProjetoFormComponent implements OnInit {
       cliente: ['', Validators.required],
       nome: ['', Validators.required],
       descricao: [],
+      observacao: [],
       inicioPrevisto: [],
       terminoPrevisto: [],
       dificuldade: [],
