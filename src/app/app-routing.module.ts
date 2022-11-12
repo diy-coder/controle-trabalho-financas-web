@@ -4,6 +4,8 @@ import { AuthGuard } from './core/auth/auth.guard';
 import { SigninComponent } from './core/signin/signin.component';
 import { ClienteFormComponent } from './forms/clientes/cliente-form/cliente-form.component';
 import { ClienteListaComponent } from './forms/clientes/cliente-lista/cliente-lista.component';
+import { FluxoDeCaixaCadastroComponent } from './forms/fluxo-de-caixa/fluxo-de-caixa-cadastro/fluxo-de-caixa-cadastro.component';
+import { FluxoDeCaixaVisualizacaoComponent } from './forms/fluxo-de-caixa/fluxo-de-caixa-visualizacao/fluxo-de-caixa-visualizacao.component';
 import { MetaFormComponent } from './forms/metas/meta-form/meta-form.component';
 import { MetaListComponent } from './forms/metas/meta-list/meta-list.component';
 import { ProjetoFormComponent } from './forms/projetos/projeto-form/projeto-form.component';
@@ -42,6 +44,15 @@ const routes: Routes = [
   {
     path: 'metas/:identifier',
     component: MetaFormComponent,
+  },
+  {
+    path: 'fluxo-de-caixa-cadastro',
+    component: FluxoDeCaixaCadastroComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'fluxo-de-caixa-listagem',
+    component: FluxoDeCaixaVisualizacaoComponent,
   },
   {
     path: 'sign-in',

@@ -22,7 +22,7 @@ export class ProjetoListaComponent implements OnInit {
       nome: 'excluir',
       acao: 'excluir',
       icone: 'apagar.svg',
-      title: 'Excluir Turma',
+      title: 'Excluir Projeto',
     },
   ];
 

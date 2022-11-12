@@ -22,7 +22,7 @@ export class MetaListComponent implements OnInit {
       nome: 'excluir',
       acao: 'excluir',
       icone: 'apagar.svg',
-      title: 'Excluir Turma',
+      title: 'Excluir Meta',
     },
   ];
 

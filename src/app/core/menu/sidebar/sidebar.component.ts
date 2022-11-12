@@ -43,44 +43,38 @@ export const ROUTES: RouteInfo[] = [
   {
     id: null,
     path: '/metas',
-    title: 'metas',
+    title: 'Metas',
     icon: 'account_balance',
     class: '',
     subItems: [],
     descricao: 'Lista de Metas',
   },
-  /**
+
   {
-    id: "curva-abc",
-    path: "/analise-qualitativa",
-    title: "Analise Qualitativa",
-    icon: "leaderboard",
+    id: "fluxo-de-caixa",
+    path: "",
+    title: "Fluxo de Caixa",
+    icon: "attach_money",
     class: "",
     subItems: [
       {
-        path: "/curva-abc-clientes",
-        title: "Curva ABC de Cliente",
-        icon: "analytics",
-        class: "",
-        descricao: "Curva ABC de Clientes",
+        path: '/fluxo-de-caixa-cadastro',
+        title: 'Gerenciar Fluxo',
+        icon: 'drive_file_rename_outline',
+        class: '',
+        descricao: 'Cadastro de Entrada/Saída',
       },
       {
-        path: "/curva-abc-produtos",
-        title: "Curva ABC de Produtos",
-        icon: "analytics",
-        class: "",
-        descricao: "Curva ABC de Produtos",
+        path: '/fluxo-de-caixa-listagem',
+        title: 'Visualizar Fluxo',
+        icon: 'query_stats',
+        class: '',
+        descricao: 'Visualizar Fluxo de Caixa',
       },
-      {
-        path: "/curva-abc-faturamento",
-        title: "Faturamento",
-        icon: "analytics",
-        class: "",
-        descricao: "Faturamento",
-      },
+      
     ],
     descricao: "",
-  },*/
+  },
 ];
 
 @Component({
