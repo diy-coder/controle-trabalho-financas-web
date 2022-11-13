@@ -89,6 +89,7 @@ export class FluxoDeCaixaCadastroComponent implements OnInit {
                     .data as unknown as firebase.default.firestore.Timestamp
                 ).toDate()
               : null,
+            style: c.payload.doc.data().tipoOperacao,
           }))
         )
       )

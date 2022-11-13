@@ -81,7 +81,7 @@
                     <tr
                       mat-row
                       *matRowDef="let row; columns: cols"
-                      class="linha-coluna"
+                      [class]="'linha-coluna ' + row['style']"
                       [class.highlight]="
                         showSelect &&
                         selectedRowIndex == row[this.displayedColumns[0].el]
