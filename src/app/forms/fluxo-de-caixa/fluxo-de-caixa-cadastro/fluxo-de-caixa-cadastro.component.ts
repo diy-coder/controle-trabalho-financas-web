@@ -94,7 +94,7 @@ export class FluxoDeCaixaCadastroComponent implements OnInit {
         )
       )
       .subscribe((data) => {
-        this.data$ = of(data);
+        this.data$ = of(data.sort((a:any,b:any)=> b.data?.getTime() - a.data?.getTime()));
         this.loadingService.setLoading(false);
       });
   }

@@ -1,1 +1,128 @@
-<p>fluxo-de-caixa-visualizacao works!</p>
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title title-caption">Fluxo de Caixa</h4>
+            <p class="category">Todas as Receitas/Despesas agrupadas por Mês</p>
+
+            <div class="row border-bottom" *ngIf="total">
+              <div class="col-md-3 border-right">
+                <div class="form-group">
+                  <label class="label-100 text-footer">Entradas</label>
+                  <label class="label-100 income text-size-30">{{
+                    total.income | currency: "BRL":"symbol"
+                  }}</label>
+                </div>
+              </div>
+      
+              <div class="col-md-9">
+                <div class="form-group">
+                  <label class="label-100 text-footer">Saídas</label>
+                  <label class="label-100 expense text-size-30">
+                    {{ total.expense | currency: "BRL":"symbol" }}</label
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Filtre por qualquer campo</label>
+                  <input #inputFilter type="text" class="form-control" 
+                  (change)="filterData(inputFilter.value)"/>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label>Mês</label>
+                  <select
+                    class="custom-select"
+                    matNativeControl
+                    #selectMonth
+                    (change)="monthChanged(selectMonth.value)"
+                  >
+                    <option [value]="">Selecione</option>
+                    <option
+                      *ngFor="let month of monthValidOptions"
+                      [value]="month"
+                    >
+                      {{ month }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="content">
+            <div class="list-transaction">
+              <div *ngFor="let item of data">
+                <div class="row table-row background-default section-header">
+                  <div
+                    class="row container pg-5 text-center background-default"
+                  >
+                    <div class="w-100 bold">
+                      {{ item.resumo.income | currency }} -
+                      {{ item.resumo.expense | currency }}
+                      =
+                      {{ item.resumo.total | currency }}
+                    </div>
+                  </div>
+                  <div class="row container pg-5 background-default">
+                    <div class="w-33 bold">
+                      {{ item.yearMonthReference }}
+                    </div>
+
+                    <div
+                      class="w-33 income bold"
+                      style="display: inline-flex; align-items: end"
+                    >
+                      <mat-icon class="income-icon">add</mat-icon>
+                      {{ item.resumo.income | currency: "BRL":"symbol" }}
+                    </div>
+
+                    <div
+                      class="w-33 expense bold"
+                      style="display: inline-flex; align-items: end"
+                    >
+                      <mat-icon class="expense-icon">remove</mat-icon>
+                      {{ item.resumo.expense | currency: "BRL":"symbol" }}
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="row table-row"
+                  *ngFor="let compra of item.fluxoList"
+                  style="height: max-content; padding: 5px 0px 5px 5px"
+                >
+                  <div class="col-md-2">
+                    <div class="day-of-month">
+                      {{ compra.data }}
+                    </div>
+                  </div>
+                  <div class="col-md-8">{{ compra.descricao }}</div>
+                  <div
+                    class="col-md-2 bold"
+                    [ngClass]="compra.style == 'ENTRADA' ? 'income' : 'expense'"
+                  >
+                    {{ compra.valor | currency: "BRL":"symbol" }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="footer">
+              <div class="stats">
+                <i class="fa fa-history"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
