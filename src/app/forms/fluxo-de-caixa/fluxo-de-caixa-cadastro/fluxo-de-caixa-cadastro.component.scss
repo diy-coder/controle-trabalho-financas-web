@@ -8,12 +8,6 @@
   font-size: 2em;
 }
 
-::ng-deep.main-content {
-  min-height: 0px !important;
-  padding: 0px !important;
-  margin-top: 0px !important;
-}
-
 ::ng-deep tr > td {
   text-align: left !important;
 }
