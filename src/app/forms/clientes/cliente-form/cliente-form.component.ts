@@ -78,6 +78,7 @@ export class ClienteFormComponent implements OnInit {
 
   private construirFormulario() {
     this.clienteFormGroup = this.formBuilder.group({
+      user_creation: [],
       cliente: ['', Validators.required],
       local: [''],
       emailResponsavel: ['', Validators.required],

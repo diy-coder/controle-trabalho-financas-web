@@ -5,6 +5,7 @@ import {
   AngularFirestoreDocument,
   DocumentReference,
 } from '@angular/fire/compat/firestore';
+import { TokenService } from 'src/app/core/token/token.service';
 import { ProjetoModel } from 'src/app/models/projetoModel';
 
 @Injectable({ providedIn: 'root' })
@@ -12,9 +13,13 @@ export class ProjetoService {
   private dbPath = '/projetos';
 
   projetosRef!: AngularFirestoreCollection<ProjetoModel>;
+  userCreation: any;
 
-  constructor(private store: AngularFirestore) {
-    this.projetosRef = store.collection(this.dbPath);
+  constructor(private store: AngularFirestore, tokenService: TokenService) {
+    this.userCreation = tokenService.getDecodedToken().user_id;
+    this.projetosRef = store.collection(this.dbPath, (ref) =>
+      ref.where('user_creation', '==', this.userCreation)
+    );
   }
 
   getAll(): AngularFirestoreCollection<ProjetoModel> {
@@ -26,6 +31,9 @@ export class ProjetoService {
   }
 
   save(projetoModel: ProjetoModel): Promise<DocumentReference<ProjetoModel>> {
+    if (!projetoModel.user_creation || projetoModel.user_creation == '') {
+      projetoModel.user_creation = this.userCreation;
+    }
     return this.projetosRef.add({ ...projetoModel });
   }
 

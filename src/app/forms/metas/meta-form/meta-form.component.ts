@@ -108,10 +108,10 @@ export class MetaFormComponent implements OnInit {
 
   private construirFormulario() {
     this.metaFormGroup = this.formBuilder.group({
+      user_creation: [],
       nome: ['', Validators.required],
       descricao: [],
       prazo: [],
-
       valorTotal: [],
       items: [],
     });

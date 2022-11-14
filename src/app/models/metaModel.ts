@@ -1,6 +1,7 @@
 import { TipoMetaEnum } from '../enums/tipo-meta.enum.ts';
 
 export interface MetaModel {
+  user_creation: string;
   nome: string;
   descricao: number;
   valorTotal: number;

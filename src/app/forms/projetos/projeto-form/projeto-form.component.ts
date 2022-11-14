@@ -92,6 +92,7 @@ export class ProjetoFormComponent implements OnInit {
 
   private construirFormulario() {
     this.projetoFormGroup = this.formBuilder.group({
+      user_creation: [],
       cliente: ['', Validators.required],
       nome: ['', Validators.required],
       descricao: [],

@@ -5,16 +5,21 @@ import {
   AngularFirestoreDocument,
   DocumentReference,
 } from '@angular/fire/compat/firestore';
+import { TokenService } from 'src/app/core/token/token.service';
 import { ClienteModel } from 'src/app/models/clienteModel';
 
 @Injectable({ providedIn: 'root' })
 export class ClienteService {
   private dbPath = '/clientes';
+  private userCreation;
 
   clientesRef!: AngularFirestoreCollection<ClienteModel>;
 
-  constructor(private store: AngularFirestore) {
-    this.clientesRef = store.collection(this.dbPath);
+  constructor(store: AngularFirestore, tokenService: TokenService) {
+    this.userCreation = tokenService.getDecodedToken().user_id;
+    this.clientesRef = store.collection(this.dbPath, (ref) =>
+      ref.where('user_creation', '==', this.userCreation)
+    );
   }
 
   getAll(): AngularFirestoreCollection<ClienteModel> {
@@ -26,6 +31,10 @@ export class ClienteService {
   }
 
   save(clienteModel: ClienteModel): Promise<DocumentReference<ClienteModel>> {
+    if (!clienteModel.user_creation || clienteModel.user_creation == '') {
+      clienteModel.user_creation = this.userCreation;
+    }
+
     return this.clientesRef.add({ ...clienteModel });
   }
 

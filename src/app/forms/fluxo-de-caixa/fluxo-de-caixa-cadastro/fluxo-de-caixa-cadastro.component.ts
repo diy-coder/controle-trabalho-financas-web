@@ -165,6 +165,7 @@ export class FluxoDeCaixaCadastroComponent implements OnInit {
 
   private construirFormulario() {
     this.fluxoDeCaixaFormGroup = this.formBuilder.group({
+      user_creation: [],
       data: ['', Validators.required],
       descricao: ['', Validators.required],
       tipoOperacao: ['', Validators.required],
