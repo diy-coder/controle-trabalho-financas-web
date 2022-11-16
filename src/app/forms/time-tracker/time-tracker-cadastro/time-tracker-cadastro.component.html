@@ -1,0 +1,101 @@
+<p>time-tracker-cadastro works!</p>
+<div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <div class="row">
+              <div
+                class="col-md-10 caption"
+                style="margin-top: auto; margin-bottom: auto"
+              >
+                Gerenciar Tempo Trabalhado
+              </div>
+              <div class="col-md-2 d-flex flex-row-reverse"></div>
+            </div>
+          </div>
+          <div class="content">
+            <form [formGroup]="fluxoDeCaixaFormGroup" #fluxoDeCaixaForm="ngForm">
+              <div class="row">
+                <div class="col-md-1">
+                  <mat-form-field>
+                    <mat-label>Data</mat-label>
+                    <input
+                      matInput
+                      [matDatepicker]="dataPicker"
+                      formControlName="data"
+                    />
+                    <mat-hint>MM/DD/YYYY</mat-hint>
+                    <mat-datepicker-toggle
+                      matSuffix
+                      [for]="dataPicker"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #dataPicker></mat-datepicker>
+                  </mat-form-field>
+                </div>
+                <div class="col-md-4">
+                  <mat-form-field>
+                    <mat-label>Descrição</mat-label>
+                    <input matInput formControlName="descricao" />
+                  </mat-form-field>
+                </div>
+                <div class="col-md-3">
+                  <mat-form-field>
+                    <mat-label>Tipo de Operação</mat-label>
+                    <mat-select formControlName="tipoOperacao">
+                      <mat-option
+                        *ngFor="let enum of tipoOperacaoEnum | keyvalue"
+                        [value]="enum.key"
+                      >
+                        {{ enum.value }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="col-md-2">
+                  <mat-form-field>
+                    <mat-label>Valor</mat-label>
+                    <input matInput formControlName="valor" />
+                  </mat-form-field>
+                </div>
+                <div class="col-md-1">
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    style="width: 100%"
+                    (click)="saveEntry()"
+                    [disabled]="!fluxoDeCaixaForm.valid"
+                  >
+                    Gravar
+                  </button>
+                </div>
+                <div class="col-md-1">
+                  <button
+                    mat-raised-button
+                    color="danger"
+                    style="width: 100%"
+                    (click)="cancel()"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="footer">
+              <app-tabela
+              class="col-md-12"
+              *ngIf="data$ | async as data"
+              [displayedColumns]="displayedColumns"
+              [dados]="data"
+              [headerTitle]="'Lista de FluxoDeCaixas cadastrados no Sistema'"
+              (selectedRow)="onRowSelect($event)"
+              [showHeader]="false"
+              (acaoSelecionada)="executarAcao($event)"
+            ></app-tabela>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

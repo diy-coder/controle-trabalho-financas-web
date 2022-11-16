@@ -1,0 +1,26 @@
+.container-fluid {
+    margin-top: 40px;
+  }
+  
+  .caption {
+    color: blue;
+    font-weight: bold;
+    font-size: 2em;
+  }
+  
+  ::ng-deep tr > td {
+    text-align: left !important;
+  }
+  
+  .card .card-header {
+    margin-top: 1% !important;
+  }
+  
+  ::ng-deep.ENTRADA {
+    background-color: #31d7314f;
+  }
+  
+  ::ng-deep.SAIDA {
+    background-color: #ff1c1c91;
+  }
+  

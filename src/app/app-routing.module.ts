@@ -10,6 +10,8 @@ import { MetaFormComponent } from './forms/metas/meta-form/meta-form.component';
 import { MetaListComponent } from './forms/metas/meta-list/meta-list.component';
 import { ProjetoFormComponent } from './forms/projetos/projeto-form/projeto-form.component';
 import { ProjetoListaComponent } from './forms/projetos/projeto-lista/projeto-lista.component';
+import { TimeTrackerCadastroComponent } from './forms/time-tracker/time-tracker-cadastro/time-tracker-cadastro.component';
+import { TimeTrackerVisualizacaoComponent } from './forms/time-tracker/time-tracker-visualizacao/time-tracker-visualizacao.component';
 import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [
@@ -53,6 +55,15 @@ const routes: Routes = [
   {
     path: 'fluxo-de-caixa-listagem',
     component: FluxoDeCaixaVisualizacaoComponent,
+  },
+  {
+    path: 'time-tracker-cadastro',
+    component: TimeTrackerCadastroComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'time-tracker-listagem',
+    component: TimeTrackerVisualizacaoComponent,
   },
   {
     path: 'sign-in',

@@ -51,11 +51,11 @@ export const ROUTES: RouteInfo[] = [
   },
 
   {
-    id: "fluxo-de-caixa",
-    path: "",
-    title: "Fluxo de Caixa",
-    icon: "attach_money",
-    class: "",
+    id: 'fluxo-de-caixa',
+    path: '',
+    title: 'Fluxo de Caixa',
+    icon: 'attach_money',
+    class: '',
     subItems: [
       {
         path: '/fluxo-de-caixa-cadastro',
@@ -71,9 +71,32 @@ export const ROUTES: RouteInfo[] = [
         class: '',
         descricao: 'Visualizar Fluxo de Caixa',
       },
-      
     ],
-    descricao: "",
+    descricao: '',
+  },
+  {
+    id: 'ftime-tracker',
+    path: '',
+    title: 'Time Tracker',
+    icon: 'today',
+    class: '',
+    subItems: [
+      {
+        path: '/time-tracker-cadastro',
+        title: 'Gerenciar Time Tracker',
+        icon: 'more_time',
+        class: '',
+        descricao: 'Registro de Tempo Trabalhado',
+      },
+      {
+        path: '/time-tracker-listagem',
+        title: 'Visualizar Time Tracker',
+        icon: 'view_timeline',
+        class: '',
+        descricao: 'Visualizar Tempo Trabalhado',
+      },
+    ],
+    descricao: '',
   },
 ];
 
