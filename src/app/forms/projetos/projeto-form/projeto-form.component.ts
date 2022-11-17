@@ -1,5 +1,7 @@
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatChipInputEvent } from '@angular/material/chips';
 import { ActivatedRoute, Router } from '@angular/router';
 import 'firebase/compat/auth'; //v9
 import { Observable, of } from 'rxjs';
@@ -14,9 +16,11 @@ import { ProjetoService } from '../projetos.service';
   styleUrls: ['./projeto-form.component.scss'],
 })
 export class ProjetoFormComponent implements OnInit {
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
   projetoFormGroup!: FormGroup;
   identifier!: string | null;
   clienteList$!: Observable<string[]>;
+  tecnologias: string[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -55,6 +59,7 @@ export class ProjetoFormComponent implements OnInit {
               ).toDate();
             }
             this.projetoFormGroup.patchValue(formData);
+            this.tecnologias = formData.tecnologias ? formData.tecnologias : [];
           }
         });
     }
@@ -66,6 +71,7 @@ export class ProjetoFormComponent implements OnInit {
 
   saveEntry() {
     const projetoModelData = this.projetoFormGroup.getRawValue();
+    projetoModelData.tecnologias = this.tecnologias;
     if (
       !this.identifier ||
       this.identifier == 'undefined' ||
@@ -88,6 +94,24 @@ export class ProjetoFormComponent implements OnInit {
     this.service.update(identifier, projetoModel).then((data) => {
       this.notificationService.showSucess('Registro Atualizado com Sucesso');
     });
+  }
+
+  addChip(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value) {
+      this.tecnologias.push(value);
+    }
+
+    event.chipInput!.clear();
+  }
+
+  removeChip(tecnologia: string): void {
+    const index = this.tecnologias.indexOf(tecnologia);
+
+    if (index >= 0) {
+      this.tecnologias.splice(index, 1);
+    }
   }
 
   private construirFormulario() {
