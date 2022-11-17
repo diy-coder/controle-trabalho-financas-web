@@ -121,8 +121,6 @@ export class TimeTrackerCadastroComponent implements OnInit {
               b.dataInicio?.getTime() - a.dataInicio?.getTime()
           )
         );
-        console.log(data);
-        
         this.loadingService.setLoading(false);
       });
   }
