@@ -98,23 +98,9 @@ export class TimeTrackerVisualizacaoComponent implements OnInit {
       },
 
       headerToolbar: {
-        left: 'dayGridMonth,timeGridWeek,timeGridDay today custom1',
+        left: 'dayGridMonth,timeGridWeek,timeGridDay today',
         center: 'title',
-        right: 'custom2 prevYear,prev,next,nextYear',
-      },
-      customButtons: {
-        custom1: {
-          text: 'custom 1',
-          click: () => {
-            this.custonButton1Click();
-          },
-        },
-        custom2: {
-          text: 'custom 2',
-          click: function () {
-            alert('clicked custom button 2!');
-          },
-        },
+        right: 'prevYear,prev,next,nextYear',
       },
     });
     this.calendar.render();
