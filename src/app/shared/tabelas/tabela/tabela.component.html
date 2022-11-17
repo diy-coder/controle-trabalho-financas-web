@@ -8,7 +8,10 @@
               <div class="col-md-10 title-caption">
                 <h4 class="card-title">{{ headerTitle }}</h4>
               </div>
-              <div class="col-md-2 d-flex flex-row-reverse" *ngIf="showAddButtom">
+              <div
+                class="col-md-2 d-flex flex-row-reverse"
+                *ngIf="showAddButtom"
+              >
                 <button
                   mat-button
                   class="btn btn-info btn-fill"
@@ -54,20 +57,45 @@
                       <th mat-header-cell *matHeaderCellDef>
                         {{ col.head }}
                       </th>
-                      <td mat-cell *matCellDef="let element">
+                      <td mat-cell *matCellDef="let element" [ngClass]="col.el">
                         <div *ngIf="!col.botoes; else icones">
                           {{ element[col.el] | pipeFormacaoColuna: col.format }}
                         </div>
                         <ng-template #icones>
-                          <img
-                            *ngFor="let acao of col.botoes"
-                            (click)="propagate($event, acao.acao, element)"
-                            [src]="'/assets/img/' + acao.icone"
-                            [alt]="acao.title"
-                            [title]="acao.title"
-                            width="25px"
-                            style="margin-left: 3%"
-                          />
+                          <div style="display: inline-flex">
+                            <div *ngFor="let acao of col.botoes" [ngClass]="acao.classeDiv">
+                              <div
+                                *ngIf="
+                                  acao.estilo && acao.estilo == 'btnElement';
+                                  else btnImg
+                                "
+                              >
+                                <button
+                                  *ngIf="element[acao.condicao] == true || acao.alwaysVisible"
+                                  class="mat-raised-button"
+                                  [ngClass]="acao.classe"
+                                  (click)="
+                                    propagate($event, acao.acao, element)
+                                  "
+                                >
+                                  {{ acao.title }}
+                                </button>
+                              </div>
+
+                              <ng-template #btnImg>
+                                <img
+                                  (click)="
+                                    propagate($event, acao.acao, element)
+                                  "
+                                  [src]="'/assets/img/' + acao.icone"
+                                  [alt]="acao.title"
+                                  [title]="acao.title"
+                                  width="25px"
+                                  style="margin-left: 3%"
+                                />
+                              </ng-template>
+                            </div>
+                          </div>
                         </ng-template>
                       </td>
                     </ng-container>

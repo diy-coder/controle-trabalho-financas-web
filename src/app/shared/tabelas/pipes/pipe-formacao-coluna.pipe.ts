@@ -1,9 +1,9 @@
-import { CurrencyPipe, DecimalPipe } from "@angular/common";
-import { Pipe, PipeTransform } from "@angular/core";
-import * as moment from "moment";
+import { CurrencyPipe, DecimalPipe } from '@angular/common';
+import { Pipe, PipeTransform } from '@angular/core';
+import * as moment from 'moment';
 
 @Pipe({
-  name: "pipeFormacaoColuna",
+  name: 'pipeFormacaoColuna',
 })
 export class PipeFormacaoColunaPipe implements PipeTransform {
   constructor(
@@ -15,21 +15,28 @@ export class PipeFormacaoColunaPipe implements PipeTransform {
     const formatacao = args[0];
 
     switch (formatacao?.tipo) {
-      case "DATE":
-        value = moment(value).format("DD/MM/yyyy");
+      case 'DATE':
+        if (value) {
+          value = moment(value).format('DD/MM/yyyy');
+        }
         break;
-      case "PIPE": {
+      case 'TIMESTAMP':
+          if (value) {
+            value = moment(value).format('DD/MM/yyyy HH:mm:ss');
+          }
+          break;
+      case 'PIPE': {
         switch (formatacao.pipe) {
-          case "decimal":
+          case 'decimal':
             value = this.decimalPipe.transform(
               value,
-              formatacao.arguments ? formatacao.arguments : "1.2-2"
+              formatacao.arguments ? formatacao.arguments : '1.2-2'
             );
             break;
-          case "currency":
+          case 'currency':
             value = this.currencyPipe.transform(
               value,
-              formatacao.arguments ? formatacao.arguments : ""
+              formatacao.arguments ? formatacao.arguments : ''
             );
             break;
         }

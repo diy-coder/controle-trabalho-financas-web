@@ -1,14 +1,16 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DocumentChangeAction } from '@angular/fire/compat/firestore';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { map, Observable, of } from 'rxjs';
 import { MustConfirm } from 'src/app/decorators/must-confirm.decorators';
 import { TipoOperacaoEnum } from 'src/app/enums/tipo-operacao.enum';
-import { FluxoDeCaixaModel } from 'src/app/models/fluxoDeCaixaModel';
+import { ProjetoModel } from 'src/app/models/projetoModel';
+import { TimeTrackerModel } from 'src/app/models/timeTrackerModel';
 import { LoadingService } from 'src/app/services/loading-service';
 import { NotificationService } from 'src/app/shared/notification/notification.service';
-import { FluxoDeCaixaService } from '../../fluxo-de-caixa/fluxo-de-caixa.service';
+import { ProjetoService } from '../../projetos/projetos.service';
+import { TimeTrackerService } from '../time-tracker.service';
 
 @Component({
   selector: 'app-time-tracker-cadastro',
@@ -20,7 +22,7 @@ export class TimeTrackerCadastroComponent implements OnInit {
 
   fluxoDeCaixaFormGroup!: FormGroup;
   identifier!: string | null;
-  clienteList$!: Observable<string[]>;
+  projetoList$!: Observable<string[]>;
   tipoOperacaoEnum = TipoOperacaoEnum;
 
   data$!: Observable<any>;
@@ -30,36 +32,45 @@ export class TimeTrackerCadastroComponent implements OnInit {
     {
       nome: 'excluir',
       acao: 'excluir',
-      icone: 'delete-36.svg',
       title: 'Excluir Fluxo',
+      estilo: 'btnElement',
+      classe: 'btn-danger',
+      classeDiv: 'mr-3',
+      alwaysVisible: true,
     },
     {
       nome: 'editar',
       acao: 'editar',
-      icone: 'edit-36.svg',
       title: 'Editar Fluxo',
+      estilo: 'btnElement',
+      classeDiv: 'mr-3',
+      alwaysVisible: true,
+    },
+    {
+      nome: 'stopTracker',
+      acao: 'stopTracker',
+      title: 'Parar Tracker',
+      estilo: 'btnElement',
+      classe: 'btn-danger',
+      condicao: 'isNotFinished',
     },
   ];
 
   displayedColumns = [
-    { head: 'Data', el: 'data', format: { tipo: 'DATE' } },
-    { head: 'Descrição', el: 'descricao' },
-    { head: 'Tipo de Operação', el: 'tipoOperacao' },
-    {
-      head: 'valor',
-      el: 'valor',
-      format: { tipo: 'PIPE', pipe: 'currency', arguments: 'BRL' },
-    },
+    { head: 'Projeto', el: 'projeto' },
+    { head: 'Data Início', el: 'dataInicio', format: { tipo: 'TIMESTAMP' } },
+    { head: 'Data Término', el: 'dataTermino', format: { tipo: 'TIMESTAMP' } },
+    { head: 'Tempo Gasto', el: 'timeSpent' },
     { head: 'Ações', el: 'actions', botoes: this.botoes },
   ];
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
     private formBuilder: FormBuilder,
-    private service: FluxoDeCaixaService,
+    private service: TimeTrackerService,
     private notificationService: NotificationService,
-    private loadingService: LoadingService
+    private loadingService: LoadingService,
+    private projetoService: ProjetoService
   ) {}
 
   ngOnInit(): void {
@@ -69,6 +80,14 @@ export class TimeTrackerCadastroComponent implements OnInit {
   }
 
   loadData() {
+    this.projetoService
+      .getAll()
+      .valueChanges()
+      .subscribe((data: ProjetoModel[]) => {
+        const projetos = data.map((projeto) => projeto.nome);
+        this.projetoList$ = of(projetos);
+      });
+
     setTimeout(() => {
       this.loadingService.setLoading(true);
     }, 0);
@@ -77,25 +96,29 @@ export class TimeTrackerCadastroComponent implements OnInit {
       .getAll()
       .snapshotChanges()
       .pipe(
-        map((changes: DocumentChangeAction<FluxoDeCaixaModel>[]) =>
-          changes.map((c: DocumentChangeAction<FluxoDeCaixaModel>) => ({
+        map((changes: DocumentChangeAction<TimeTrackerModel>[]) =>
+          changes.map((c: DocumentChangeAction<TimeTrackerModel>) => ({
             id: c.payload.doc.id,
-            descricao: c.payload.doc.data().descricao,
-            tipoOperacao: c.payload.doc.data().tipoOperacao,
-            valor: c.payload.doc.data().valor,
-            data: c.payload.doc.data()
-              ? (
-                  c.payload.doc.data()
-                    .data as unknown as firebase.default.firestore.Timestamp
-                ).toDate()
-              : null,
-            style: c.payload.doc.data().tipoOperacao,
+            user_creation: c.payload.doc.data().user_creation,
+            projeto: c.payload.doc.data().projeto,
+            dataInicio: this.getConvertedData(c.payload.doc.data().dataInicio),
+            dataTermino: this.getConvertedData(
+              c.payload.doc.data().dataTermino
+            ),
+            isNotFinished: !(
+              c.payload.doc.data().dataInicio &&
+              c.payload.doc.data().dataTermino
+            ),
+            timeSpent: c.payload.doc.data().timeSpent,
           }))
         )
       )
       .subscribe((data) => {
         this.data$ = of(
-          data.sort((a: any, b: any) => b.data?.getTime() - a.data?.getTime())
+          data.sort(
+            (a: any, b: any) =>
+              b.dataInicio?.getTime() - a.dataInicio?.getTime()
+          )
         );
         this.loadingService.setLoading(false);
       });
@@ -106,39 +129,39 @@ export class TimeTrackerCadastroComponent implements OnInit {
       this.loadingService.setLoading(true);
     }, 0);
 
-    const fluxoDeCaixaModelData = this.fluxoDeCaixaFormGroup.getRawValue();
+    const timeTrackerModelData = this.fluxoDeCaixaFormGroup.getRawValue();
     if (
       !this.identifier ||
       this.identifier == 'undefined' ||
       this.identifier == '0'
     ) {
-      this.save(fluxoDeCaixaModelData);
+      this.save(timeTrackerModelData);
     } else {
-      this.update('' + this.identifier, fluxoDeCaixaModelData);
+      this.update('' + this.identifier, timeTrackerModelData);
     }
   }
 
-  save(fluxoDeCaixaModel: FluxoDeCaixaModel) {
-    this.service.save(fluxoDeCaixaModel).then((data) => {
+  save(timeTrackerModel: TimeTrackerModel) {
+    this.updateTimeSpent(timeTrackerModel);
+    this.service.save(timeTrackerModel).then((data) => {
       this.notificationService.showSucess('Registro Criado com Sucesso');
       this.fluxoDeCaixaForm.resetForm();
       this.loadData();
     });
   }
 
-  update(identifier: string, fluxoDeCaixaModel: FluxoDeCaixaModel) {
-    this.service.update(identifier, fluxoDeCaixaModel).then((data) => {
-      this.notificationService.showSucess('Registro Atualizado com Sucesso');
-      this.fluxoDeCaixaForm.resetForm();
-      this.loadData();
-    });
+  async stopTracker(identifier: string, timeTrackerModel: TimeTrackerModel) {
+    timeTrackerModel.dataTermino = new Date();
+    this.update(identifier, timeTrackerModel);
   }
 
-  onRowSelect($event: any) {
-    if (!$event) {
-      return;
-    }
-    this.router.navigate(['projetos/' + $event.id]);
+  async update(identifier: string, timeTrackerModel: TimeTrackerModel) {
+    this.loadingService.setLoading(true);
+    this.updateTimeSpent(timeTrackerModel);
+    await this.service.update(identifier, timeTrackerModel);
+    this.notificationService.showSucess('Registro Atualizado com Sucesso');
+    this.fluxoDeCaixaForm.resetForm();
+    this.loadData();
   }
 
   executarAcao(acaoPropagate: any) {
@@ -150,6 +173,9 @@ export class TimeTrackerCadastroComponent implements OnInit {
         break;
       case 'excluir':
         this.excluirItem(this.itemSelecionado.id);
+        break;
+      case 'stopTracker':
+        this.stopTracker(this.itemSelecionado.id, this.itemSelecionado);
     }
   }
 
@@ -165,13 +191,51 @@ export class TimeTrackerCadastroComponent implements OnInit {
     this.fluxoDeCaixaForm.resetForm();
   }
 
+  calculateDifferenceBetweenTwoDates(timeTrackerModel: TimeTrackerModel) {
+    if (!timeTrackerModel.dataInicio || !timeTrackerModel.dataTermino) {
+      return '';
+    }
+    var diffMs =
+      timeTrackerModel.dataTermino.getTime() -
+      timeTrackerModel.dataInicio.getTime(); // milliseconds between now & Christmas
+    var diffDays = Math.floor(diffMs / 86400000); // days
+    var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
+    var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+    return diffDays + ' dias, ' + diffHrs + ' horas, ' + diffMins + ' minutos';
+  }
+
+  getDifferenceInMinutes(timeTrackerModel: TimeTrackerModel): number {
+    const secs = Math.floor(
+      Math.abs(
+        timeTrackerModel.dataTermino.getTime() -
+          timeTrackerModel.dataInicio.getTime()
+      ) / 1000
+    );
+    return Math.floor(secs / 60);
+  }
+
+  private getConvertedData(date: Date) {
+    return date
+      ? (date as unknown as firebase.default.firestore.Timestamp).toDate()
+      : null;
+  }
+
+  private updateTimeSpent(timeTrackerModel: TimeTrackerModel) {
+    if (timeTrackerModel.dataInicio && timeTrackerModel.dataTermino) {
+      timeTrackerModel.minutesTotalSpent =
+        this.getDifferenceInMinutes(timeTrackerModel);
+
+      timeTrackerModel.timeSpent =
+        this.calculateDifferenceBetweenTwoDates(timeTrackerModel);
+    }
+  }
   private construirFormulario() {
     this.fluxoDeCaixaFormGroup = this.formBuilder.group({
       user_creation: [],
-      data: ['', Validators.required],
-      descricao: ['', Validators.required],
-      tipoOperacao: ['', Validators.required],
-      valor: ['', Validators.required],
+      projeto: ['', Validators.required],
+      dataInicio: ['', Validators.required],
+      dataTermino: [],
+      timeSpent: [],
     });
   }
 }
