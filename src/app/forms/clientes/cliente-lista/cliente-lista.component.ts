@@ -29,6 +29,7 @@ export class ClienteListaComponent implements OnInit {
   displayedColumns = [
     { head: 'Cliente', el: 'cliente' },
     { head: 'País', el: 'local' },
+    { head: 'Email Responsável', el: 'emailResponsavel' },
     { head: 'Ações', el: 'actions', botoes: this.botoes },
   ];
 

@@ -93,6 +93,7 @@ export class ClienteFormComponent implements OnInit {
       ultimoProjetoInicio: [''],
       ultimoProjetoEntrega: [''],
       dataPrimeiroContato: [''],
+      moeda: [''],
     });
   }
 }

@@ -18,4 +18,5 @@ export interface ClienteModel {
   ultimoProjetoInicio: Date;
   ultimoProjetoEntrega: Date;
   dataPrimeiroContato: Date;
+  moeda: string;
 }

@@ -168,6 +168,17 @@
                   <mat-datepicker #dataPrimeiroContatoPicker></mat-datepicker>
                 </mat-form-field>
               </div>
+
+              <div class="col-md-2">
+                <mat-form-field>
+                  <mat-label>Moeda</mat-label>
+                  <mat-select formControlName="moeda">
+                    <mat-option [value]="'USD'">Dólar</mat-option>
+                    <mat-option [value]="'EUR'">Euro</mat-option>
+                    <mat-option [value]="'BRL'">Real</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
             </div>
           </form>
         </div>
