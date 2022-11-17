@@ -3,6 +3,7 @@ import { DocumentChangeAction } from '@angular/fire/compat/firestore';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { map, Observable, of } from 'rxjs';
+import { LoadIconAroundInvoke } from 'src/app/decorators/load-icon.decorator';
 import { MustConfirm } from 'src/app/decorators/must-confirm.decorators';
 import { TipoOperacaoEnum } from 'src/app/enums/tipo-operacao.enum';
 import { ProjetoModel } from 'src/app/models/projetoModel';
@@ -80,6 +81,10 @@ export class TimeTrackerCadastroComponent implements OnInit {
   }
 
   loadData() {
+    setTimeout(() => {
+      this.loadingService.setLoading(true);
+    }, 0);
+
     this.projetoService
       .getAll()
       .valueChanges()
@@ -87,10 +92,6 @@ export class TimeTrackerCadastroComponent implements OnInit {
         const projetos = data.map((projeto) => projeto.nome);
         this.projetoList$ = of(projetos);
       });
-
-    setTimeout(() => {
-      this.loadingService.setLoading(true);
-    }, 0);
 
     this.service
       .getAll()
@@ -120,15 +121,13 @@ export class TimeTrackerCadastroComponent implements OnInit {
               b.dataInicio?.getTime() - a.dataInicio?.getTime()
           )
         );
+        console.log(data);
+        
         this.loadingService.setLoading(false);
       });
   }
 
   saveEntry() {
-    setTimeout(() => {
-      this.loadingService.setLoading(true);
-    }, 0);
-
     const timeTrackerModelData = this.fluxoDeCaixaFormGroup.getRawValue();
     if (
       !this.identifier ||
@@ -141,13 +140,13 @@ export class TimeTrackerCadastroComponent implements OnInit {
     }
   }
 
-  save(timeTrackerModel: TimeTrackerModel) {
+  @LoadIconAroundInvoke()
+  async save(timeTrackerModel: TimeTrackerModel) {
     this.updateTimeSpent(timeTrackerModel);
-    this.service.save(timeTrackerModel).then((data) => {
-      this.notificationService.showSucess('Registro Criado com Sucesso');
-      this.fluxoDeCaixaForm.resetForm();
-      this.loadData();
-    });
+    await this.service.save(timeTrackerModel);
+    this.notificationService.showSucess('Registro Criado com Sucesso');
+    this.fluxoDeCaixaForm.resetForm();
+    this.loadData();
   }
 
   async stopTracker(identifier: string, timeTrackerModel: TimeTrackerModel) {
@@ -155,8 +154,8 @@ export class TimeTrackerCadastroComponent implements OnInit {
     this.update(identifier, timeTrackerModel);
   }
 
+  @LoadIconAroundInvoke()
   async update(identifier: string, timeTrackerModel: TimeTrackerModel) {
-    this.loadingService.setLoading(true);
     this.updateTimeSpent(timeTrackerModel);
     await this.service.update(identifier, timeTrackerModel);
     this.notificationService.showSucess('Registro Atualizado com Sucesso');
@@ -233,7 +232,7 @@ export class TimeTrackerCadastroComponent implements OnInit {
     this.fluxoDeCaixaFormGroup = this.formBuilder.group({
       user_creation: [],
       projeto: ['', Validators.required],
-      dataInicio: ['', Validators.required],
+      dataInicio: [new Date(), Validators.required],
       dataTermino: [],
       timeSpent: [],
     });
