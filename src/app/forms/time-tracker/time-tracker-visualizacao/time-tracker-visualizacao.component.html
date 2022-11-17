@@ -1,1 +1,35 @@
-<p>time-tracker-visualizacao works!</p>
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">
+              Selecione uma data para iniciar o Agendamento
+            </h4>
+          </div>
+          <div class="content" id="calendar"></div>
+          <div class="content">
+            <div class="row">
+              <div class="col-md-12">
+                <label class="caption"
+                  >Tempo Total gasto por Projeto no MÊS selecionado</label
+                >
+              </div>
+            </div>
+            <div class="list-transaction">
+              <div class="row linha" *ngFor="let item of summary">
+                <div class="col-md-2">
+                  <span class="project-name">{{ item.projeto }}</span>
+                </div>
+                <div class="col-md-2">
+                  <span class="tempo-gasto">{{ item.tempoGasto }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
