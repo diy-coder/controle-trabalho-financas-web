@@ -8,4 +8,6 @@ export interface ProjetoModel {
   terminoPrevisto: Date;
   dificuldade: number;
   tecnologias: string[];
+  moeda: string;
+  valorEstimado: number;
 }

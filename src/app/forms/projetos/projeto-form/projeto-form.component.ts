@@ -101,6 +101,8 @@ export class ProjetoFormComponent implements OnInit {
       terminoPrevisto: [],
       dificuldade: [],
       tencologias: [],
+      moeda: ['BRL'],
+      valorEstimado: [],
     });
   }
 }

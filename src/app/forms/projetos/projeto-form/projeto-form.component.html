@@ -39,16 +39,32 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <mat-form-field>
                   <mat-label>Nome</mat-label>
                   <input matInput formControlName="nome" />
                 </mat-form-field>
               </div>
-              <div class="col-md-8">
+              <div class="col-md-6">
                 <mat-form-field>
                   <mat-label>Descrição</mat-label>
                   <input matInput formControlName="descricao" />
+                </mat-form-field>
+              </div>
+              <div class="col-md-1">
+                <mat-form-field>
+                  <mat-label>Moeda</mat-label>
+                  <mat-select formControlName="moeda">
+                    <mat-option [value]="'USD'">Dólar</mat-option>
+                    <mat-option [value]="'EUR'">Euro</mat-option>
+                    <mat-option [value]="'BRL'">Real</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-md-2">
+                <mat-form-field>
+                  <mat-label>Valor Estimado</mat-label>
+                  <input matInput formControlName="valorEstimado" />
                 </mat-form-field>
               </div>
             </div>

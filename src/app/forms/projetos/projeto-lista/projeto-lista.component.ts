@@ -30,6 +30,12 @@ export class ProjetoListaComponent implements OnInit {
     { head: 'Cliente', el: 'cliente' },
     { head: 'Nome', el: 'nome' },
     { head: 'Descricao', el: 'descricao' },
+    { head: 'Moeda', el: 'moeda' },
+    {
+      head: 'Valor Estimado',
+      el: 'valorEstimado',
+      format: { tipo: 'PIPE', pipe: 'decimal' },
+    },
     { head: 'Ações', el: 'actions', botoes: this.botoes },
   ];
 
