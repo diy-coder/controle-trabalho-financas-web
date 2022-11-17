@@ -23,3 +23,14 @@
 ::ng-deep.SAIDA {
   background-color: #ff1c1c91;
 }
+
+::ng-deep
+  app-tabela.col-md-12.ng-star-inserted
+  div.main-content
+  div.container-fluid
+  div.row
+  div.col-md-12
+  div.card {
+  margin-top: 0px;
+  padding-top: 0px;
+}

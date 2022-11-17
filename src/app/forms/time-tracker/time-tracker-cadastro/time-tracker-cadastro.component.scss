@@ -1,29 +1,40 @@
 .container-fluid {
-    margin-top: 40px;
-  }
-  
-  .caption {
-    color: blue;
-    font-weight: bold;
-    font-size: 2em;
-  }
-  
-  ::ng-deep tr > td {
-    text-align: left !important;
-  }
-  
-  .card .card-header {
-    margin-top: 1% !important;
-  }
-  
-  ::ng-deep.ENTRADA {
-    background-color: #31d7314f;
-  }
-  
-  ::ng-deep.SAIDA {
-    background-color: #ff1c1c91;
-  }
-  
-  ::ng-deep.actions{
-    width: 30%;
-  }
+  margin-top: 40px;
+}
+
+.caption {
+  color: blue;
+  font-weight: bold;
+  font-size: 2em;
+}
+
+::ng-deep tr > td {
+  text-align: left !important;
+}
+
+.card .card-header {
+  margin-top: 1% !important;
+}
+
+::ng-deep.ENTRADA {
+  background-color: #31d7314f;
+}
+
+::ng-deep.SAIDA {
+  background-color: #ff1c1c91;
+}
+
+::ng-deep.actions {
+  width: 30%;
+}
+
+::ng-deep
+  app-tabela.col-md-12.ng-star-inserted
+  div.main-content
+  div.container-fluid
+  div.row
+  div.col-md-12
+  div.card {
+  margin-top: 0px;
+  padding-top: 0px;
+}
