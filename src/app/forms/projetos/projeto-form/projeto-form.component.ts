@@ -4,11 +4,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { ActivatedRoute, Router } from '@angular/router';
 import 'firebase/compat/auth'; //v9
-import { Observable, of } from 'rxjs';
-import { ClienteModel } from 'src/app/models/clienteModel';
 import { ProjetoModel } from 'src/app/models/projetoModel';
 import { NotificationService } from 'src/app/shared/notification/notification.service';
-import { ClienteService } from '../../clientes/clientes.service';
 import { ProjetoService } from '../projetos.service';
 @Component({
   selector: 'app-projeto-form',
@@ -19,7 +16,6 @@ export class ProjetoFormComponent implements OnInit {
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
   projetoFormGroup!: FormGroup;
   identifier!: string | null;
-  clienteList$!: Observable<string[]>;
   tecnologias: string[] = [];
 
   constructor(
@@ -27,22 +23,13 @@ export class ProjetoFormComponent implements OnInit {
     private router: Router,
     private formBuilder: FormBuilder,
     private service: ProjetoService,
-    private notificationService: NotificationService,
-    private clienteService: ClienteService
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
     this.identifier = this.route.snapshot.paramMap.get('identifier');
     this.construirFormulario();
     this.loadData(this.identifier);
-
-    this.clienteService
-      .getAll()
-      .valueChanges()
-      .subscribe((data: ClienteModel[]) => {
-        const clientes = data.map((cliente) => cliente.cliente);
-        this.clienteList$ = of(clientes);
-      });
   }
 
   loadData(identifier: string | null) {
@@ -117,7 +104,6 @@ export class ProjetoFormComponent implements OnInit {
   private construirFormulario() {
     this.projetoFormGroup = this.formBuilder.group({
       user_creation: [],
-      cliente: ['', Validators.required],
       nome: ['', Validators.required],
       descricao: [],
       observacao: [],

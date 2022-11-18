@@ -23,21 +23,6 @@
         </div>
         <div class="content">
           <form [formGroup]="projetoFormGroup" #projetoForm="ngForm">
-            <div class="row" *ngIf="clienteList$ | async as clienteList">
-              <div class="col-md-3">
-                <mat-form-field>
-                  <mat-label>Cliente</mat-label>
-                  <mat-select formControlName="cliente">
-                    <mat-option
-                      *ngFor="let cliente of clienteList"
-                      [value]="cliente"
-                    >
-                      {{ cliente }}
-                    </mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </div>
-            </div>
             <div class="row">
               <div class="col-md-3">
                 <mat-form-field>
