@@ -108,7 +108,7 @@
   background: #d9dadb;
 }
 
-.upload-btn-wrapper input[type='file'] {
+.upload-btn-wrapper input[type="file"] {
   font-size: 100px !important;
   position: absolute !important;
   left: 0 !important;
@@ -241,7 +241,7 @@ label {
 }
 
 .popover_label::after {
-  content: ':';
+  content: ":";
   text-align: right;
   float: right;
 }
@@ -257,4 +257,8 @@ label {
 
 .checkerror {
   color: #ff647c;
+}
+
+.mat-icon {
+  overflow: visible !important;
 }

@@ -87,9 +87,6 @@ export class TimeTrackerVisualizacaoComponent implements OnInit {
         day: 'Dia',
         list: 'Lista',
       },
-      dateClick: (args) => {
-        this.dayClick(args.date, args.dateStr, args.jsEvent, args.view);
-      },
       eventClick: (args) => {},
       titleFormat: { year: 'numeric', month: 'short', day: 'numeric' },
 
@@ -107,10 +104,6 @@ export class TimeTrackerVisualizacaoComponent implements OnInit {
   }
 
   custonButton1Click() {}
-
-  dayClick(date: Date, dateStr: any, jsEvent: any, activeView: any) {
-    //console.log(date);
-  }
 
   summary: any[] = [];
   presentSummary() {

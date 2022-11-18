@@ -1,14 +1,15 @@
-import {
-  HttpClient,
-  HttpEventType,
-  HttpHeaders,
-  HttpParams,
-  HttpResponse,
-} from '@angular/common/http';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { MatDialog } from '@angular/material/dialog';
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from 'firebase/storage';
 import { MustConfirm } from 'src/app/decorators/must-confirm.decorators';
 import { BytePipe } from 'src/app/pipes/byte-pipe.pipe';
+import { NotificationService } from '../../notification/notification.service';
 import { FileService } from '../file.service';
 import { ArquivoHandler } from '../handler/handler';
 
@@ -17,35 +18,24 @@ import { ArquivoHandler } from '../handler/handler';
  */
 @Component({
   selector: 'app-mat-file-upload-multi',
-  templateUrl: `./mat-file-upload-multi.html`,
+  templateUrl: './mat-file-upload-multi.component.html',
+  styleUrls: ['./mat-file-upload-multi.component.css'],
   exportAs: 'matFileUpload',
-  styleUrls: ['./matFileUploadQueue.css'],
 })
 export class MatFileUploadMultiComponent {
-  @Input() idProcesso!: number;
-  @Input() idRelacionamento = 0;
-  @Input() tipoRelacionamento = 'GERAL';
-
   constructor(
-    private httpClient: HttpClient,
     public dialog: MatDialog,
-    private fileService: FileService
+    private fileService: FileService,
+    private notificationService: NotificationService,
+    private storage: AngularFireStorage
   ) {}
 
   isUploading = false;
-  ErroUpload = false;
   gravadoNaBase = false;
   fromDataBase = false;
   ordem!: number;
 
-  @Input() httpUrl = '';
-
-  @Input()
-  httpRequestParams:
-    | HttpParams
-    | {
-        [param: string]: string | string[];
-      } = new HttpParams();
+  @Input() pasta!: string;
 
   @Input()
   fileAlias = 'file';
@@ -56,8 +46,6 @@ export class MatFileUploadMultiComponent {
   }
   set file(file: any) {
     this._file = file;
-    this.total = this._file.size;
-
     if (this.file.gravadoNaBase) {
       this.status = 'Gravado';
       this.progressPercentage = 100;
@@ -83,102 +71,58 @@ export class MatFileUploadMultiComponent {
 
   @Output() SaidaErroMensagem = '';
 
-  @Input() idArquivoDocumento!: any;
-
   progressPercentage = 0;
 
   status = 'Não carregado';
   public loaded = 0;
-  private total = 0;
   private _file: any;
   private _id!: number;
   private fileUploadSubscription: any;
 
   public upload() {
     return new Promise((dados) => {
-      if (this._file.size / 1024 > 10240) {
+      if (this._file.size / 1024 > 100240) {
         this.status = 'Erro no carregamento';
         this.gravadoNaBase = false;
         this.isUploading = false;
-        this.ErroUpload = true;
         this.SaidaErroMensagem =
           'Tamanho do arquivo supera limite máximo suportado: 10MB';
         this.uploaded.emit({ file: this._file, event });
 
-        dados(this._file.idArquivoDocumento + ' - ' + this.idArquivoDocumento);
+        dados(this._file.idArquivoDocumento);
         return;
       }
 
       this.isUploading = true;
       this.status = '0%';
 
-      const formData = new FormData();
-      formData.set(this.fileAlias, this._file, this._file.name);
-      formData.append('ordem', this._file.ordem);
-      formData.append('dataAlteracaoArquivo', this._file.lastModified);
+      const storageObj = getStorage();
+      const storageRef = ref(storageObj, this.pasta + '/' + this._file.name);
+      const uploadTask = uploadBytesResumable(storageRef, this._file);
 
-      formData.append('processoId', '' + this.idProcesso);
-      formData.append('idRelacionamento', '' + this.idRelacionamento);
-      formData.append('tipoRelacionamento', this.tipoRelacionamento);
-
-      this.fileUploadSubscription = this.httpClient
-        .post(this.httpUrl, formData, {
-          headers: new HttpHeaders({
-            // Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-          }),
-          observe: 'events',
-          params: this.httpRequestParams,
-          reportProgress: true,
-          responseType: 'json',
-        })
-        .subscribe(
-          (event: any) => {
-            this.ErroUpload = false;
-            if (event.type === HttpEventType.UploadProgress) {
-              this.progressPercentage = Math.floor(
-                (event.loaded * 100) / event.total
-              );
-              this.status = this.progressPercentage.toString() + '%';
-              if (this.status === '100%') {
-                this.status = 'Carregado';
-                this.gravadoNaBase = true;
-                this.isUploading = false;
-              }
-              this.loaded = event.loaded;
-              this.total = event.total;
-            }
-
-            if (event && event.body) {
-              this.status = 'Carregado';
-              this.gravadoNaBase = true;
-              this.isUploading = false;
-              this.file.id = event.body.id;
-              this.file.gravadoNaBase = true;
-              dados(this.idArquivoDocumento);
-            }
-
-            this.uploaded.emit({ file: this._file, event });
-          },
-          (error: any) => {
-            if (this.fileUploadSubscription) {
-              this.fileUploadSubscription.unsubscribe();
-            }
-
+      this.status = 'Carregando';
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          this.progressPercentage = progress;
+        },
+        (error) => {
+          this.notificationService.showError(
+            'Um erro o correu ao tentar carregar o arquivo: ' +
+              error.code +
+              ' - ' +
+              error.message
+          );
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            this.status = 'Carregado';
             this.isUploading = false;
-            this.ErroUpload = true;
-            if (error.error.Mensagem) {
-              this.status = error.error.Mensagem;
-            } else {
-              this.status = 'Erro no carregamento';
-              this.gravadoNaBase = false;
-              this.fromDataBase = false;
-              this.SaidaErroMensagem = 'Arquivo inválido';
-            }
-            this.uploaded.emit({ file: this._file, event });
-
-            dados('Arquivos Carregados');
-          }
-        );
+          });
+        }
+      );
     });
   }
 
@@ -191,27 +135,16 @@ export class MatFileUploadMultiComponent {
     if (this.fileUploadSubscription) {
       this.fileUploadSubscription.unsubscribe();
     }
-    this.removeEvent.emit(this);
+    this.removeEvent.emit(this.file);
   }
 
-  public download(idArquivo: number, nomeArquivo: string) {
-    this.fileService
-      .download(idArquivo)
-      .subscribe((res: HttpResponse<ArrayBuffer>) => {
-        ArquivoHandler.renderAndDownloadFile(res.body, nomeArquivo);
+  public download(nomeArquivo: string) {
+    this.storage
+      .ref(this.pasta + '/' + nomeArquivo)
+      .getDownloadURL()
+      .subscribe((url) => {
+        ArquivoHandler.downloadFromLink(url);
       });
-  }
-
-  public getNomeArquivoOriginal(nomeOriginal: string): string {
-    const bytes = new BytePipe();
-    const tam = this.file.size ? this.file.size : this.file.tamanhoArquivo;
-    if (this.file.name.length > 20) {
-      return `${`${this.file.name.substring(0, 25)}`}   (${`${bytes.transform(
-        tam
-      )}`})`;
-    } else {
-      return `${`${this.file.name}`}   (${`${bytes.transform(tam)}`})`;
-    }
   }
 
   getTamanhoArquivo(tamanho: any) {

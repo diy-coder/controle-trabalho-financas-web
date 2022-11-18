@@ -1,5 +1,3 @@
-import { moveItemInArray } from '@angular/cdk/drag-drop';
-import { HttpHeaders, HttpParams } from '@angular/common/http';
 import {
   AfterViewInit,
   Component,
@@ -15,7 +13,6 @@ import { merge, Subscription } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 import { MustConfirm } from 'src/app/decorators/must-confirm.decorators';
 import { FileModel } from '../file.interface';
-import { OrdenacaoFileModel } from '../ordenacao-file-model';
 import { MatFileUploadMultiComponent } from './mat-file-upload-multi.component';
 
 /**
@@ -25,7 +22,7 @@ import { MatFileUploadMultiComponent } from './mat-file-upload-multi.component';
   selector: 'app-mat-file-upload-queue',
   templateUrl: 'mat-file-upload-multi-queue.html',
   exportAs: 'matFileUploadQueue',
-  styleUrls: ['./matFileUploadQueue.css'],
+  styleUrls: ['./mat-file-upload-multi.component.css'],
 })
 export class MatFileUploadQueueComponent
   implements OnChanges, AfterViewInit, OnInit
@@ -50,49 +47,21 @@ export class MatFileUploadQueueComponent
 
   files: Array<any> = [];
 
-  /* Http request input bindings */
-
-  @Input()
-  httpRequestHeaders:
-    | HttpHeaders
-    | {
-        [header: string]: string | string[];
-      } = new HttpHeaders().set('Content-Type', 'multipart/form-data');
-
-  @Input()
-  httpRequestParams:
-    | HttpParams
-    | {
-        [param: string]: string | string[];
-      } = new HttpParams();
-
   @Input() listaArquivos!: FileModel[];
-  @Input() ordemAlterada!: OrdenacaoFileModel;
-  @Input() exibeNomePadronizadoArquivo = false;
   @Input() fileAlias = 'file';
-  @Input() controllerAction = '';
-  @Input() httpUrl = '';
-  @Input() modoEdicao!: boolean;
   hasFiles = false;
   contagem = 0;
   ArquivosNaoCarregados = false;
-  ultimoInserido = -1;
-  idArquivoDocumento = -1;
-  private idDocumentoGerado = -1;
 
   constructor(public dialog: MatDialog) {}
 
   ngAfterViewInit() {
-    // When the list changes, re-subscribe
-
     this.changeSubscription = this.fileUploads.changes
-      // tslint:disable-next-line: deprecation
       .pipe(startWith(null))
       .subscribe(() => {
         if (this.fileRemoveSubscription) {
           this.fileRemoveSubscription.unsubscribe();
         }
-
         this._listenTofileRemoved();
         this._listenTofileUploaded();
       });
@@ -102,20 +71,12 @@ export class MatFileUploadQueueComponent
     for (let i = 0; i <= this.files.length - 1; i++) {
       this.files[i].ordem = i + 1;
     }
-    const listaReordenada = this.files.map((f) => {
-      return {
-        id: f.id,
-        ordem: f.ordem,
-      };
-    });
   }
 
   private _listenTofileRemoved(): void {
     this.fileRemoveSubscription = this.fileUploadRemoveEvents.subscribe(
       (event: MatFileUploadMultiComponent) => {
         this.files.splice(event.id, 1);
-        this.ultimoInserido = -1;
-
         this.reordenarArray();
 
         if (event.gravadoNaBase || event.fromDataBase) {
@@ -135,39 +96,16 @@ export class MatFileUploadQueueComponent
 
   add(file: any) {
     file.ordem = this.files.length + 1;
-    if (this.idArquivoDocumento) {
-      file.idArquivoDocumento = this.idArquivoDocumento;
-    }
     this.files.push(file);
-
     this.ArquivosNaoCarregados = true;
   }
 
-  async realizarUpload(arquivo: MatFileUploadMultiComponent) {
-    const resultadoExecucao = await arquivo.upload();
-  }
-
   async enviarArquivo(arquivo: MatFileUploadMultiComponent) {
-    const resultadoExecucao: any = await arquivo.upload();
-    this.idDocumentoGerado = +resultadoExecucao;
+    arquivo.upload();
   }
 
-  public async uploadAll() {
-    for (let i = 0; i < this.fileUploads.length; i++) {
-      const arquivo = this.fileUploads.toArray()[i];
-
-      if (this.idDocumentoGerado > -1) {
-        arquivo.idArquivoDocumento = this.idDocumentoGerado;
-      }
-
-      if (!arquivo.gravadoNaBase) {
-        await this.enviarArquivo(arquivo);
-      }
-    }
-
-    this.idDocumentoGerado = -1;
-    this.ArquivosNaoCarregados =
-      this.files.filter((x) => x.gravadoNaBase !== true).length > 0;
+  public uploadAll() {
+    this.fileUploads.forEach((item) => this.enviarArquivo(item));
   }
 
   @MustConfirm('Deseja realmente excluir TODOS os arquivos?')
@@ -189,15 +127,6 @@ export class MatFileUploadQueueComponent
     if (changes['listaArquivos']) {
       this.refreshFileList();
     }
-
-    if (changes['ordemAlterada']) {
-      moveItemInArray(
-        this.files,
-        this.ordemAlterada.anterior,
-        this.ordemAlterada.atual
-      );
-      this.reordenarArray();
-    }
   }
 
   private refreshFileList() {
@@ -209,7 +138,6 @@ export class MatFileUploadQueueComponent
         arquivo.gravadoNaBase = true;
         arquivo.ordem = i + 1;
         arquivo.nomeArquivo = this.listaArquivos[i].nomeArquivo;
-        arquivo.tamanhoArquivo = this.listaArquivos[i].tamanhoArquivo;
         this.files.push(arquivo);
       }
     }
