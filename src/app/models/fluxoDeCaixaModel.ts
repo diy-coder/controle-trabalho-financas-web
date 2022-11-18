@@ -1,4 +1,4 @@
-import { TipoOperacaoEnum } from "../enums/tipo-operacao.enum";
+import { TipoOperacaoEnum } from '../enums/tipo-operacao.enum';
 
 export interface FluxoDeCaixaModel {
   user_creation: string;
@@ -6,4 +6,5 @@ export interface FluxoDeCaixaModel {
   descricao: string;
   tipoOperacao: TipoOperacaoEnum;
   valor: number;
+  projeto: string;
 }

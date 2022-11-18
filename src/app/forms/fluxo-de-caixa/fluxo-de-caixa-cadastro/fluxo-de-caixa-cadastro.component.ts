@@ -6,8 +6,10 @@ import { map, Observable, of } from 'rxjs';
 import { MustConfirm } from 'src/app/decorators/must-confirm.decorators';
 import { TipoOperacaoEnum } from 'src/app/enums/tipo-operacao.enum';
 import { FluxoDeCaixaModel } from 'src/app/models/fluxoDeCaixaModel';
+import { ProjetoModel } from 'src/app/models/projetoModel';
 import { LoadingService } from 'src/app/services/loading-service';
 import { NotificationService } from 'src/app/shared/notification/notification.service';
+import { ProjetoService } from '../../projetos/projetos.service';
 import { FluxoDeCaixaService } from '../fluxo-de-caixa.service';
 
 @Component({
@@ -20,7 +22,7 @@ export class FluxoDeCaixaCadastroComponent implements OnInit {
 
   fluxoDeCaixaFormGroup!: FormGroup;
   identifier!: string | null;
-  clienteList$!: Observable<string[]>;
+  projetoList$!: Observable<string[]>;
   tipoOperacaoEnum = TipoOperacaoEnum;
 
   data$!: Observable<any>;
@@ -50,6 +52,7 @@ export class FluxoDeCaixaCadastroComponent implements OnInit {
       el: 'valor',
       format: { tipo: 'PIPE', pipe: 'currency', arguments: 'BRL' },
     },
+    { head: 'Projeto', el: 'projeto' },
     { head: 'Ações', el: 'actions', botoes: this.botoes },
   ];
 
@@ -59,7 +62,8 @@ export class FluxoDeCaixaCadastroComponent implements OnInit {
     private formBuilder: FormBuilder,
     private service: FluxoDeCaixaService,
     private notificationService: NotificationService,
-    private loadingService: LoadingService
+    private loadingService: LoadingService,
+    private projetoService: ProjetoService
   ) {}
 
   ngOnInit(): void {
@@ -73,6 +77,14 @@ export class FluxoDeCaixaCadastroComponent implements OnInit {
       this.loadingService.setLoading(true);
     }, 0);
 
+    this.projetoService
+      .getAll()
+      .valueChanges()
+      .subscribe((data: ProjetoModel[]) => {
+        const projetos = data.map((projeto) => projeto.nome);
+        this.projetoList$ = of(projetos);
+      });
+
     this.service
       .getAll()
       .snapshotChanges()
@@ -80,9 +92,11 @@ export class FluxoDeCaixaCadastroComponent implements OnInit {
         map((changes: DocumentChangeAction<FluxoDeCaixaModel>[]) =>
           changes.map((c: DocumentChangeAction<FluxoDeCaixaModel>) => ({
             id: c.payload.doc.id,
+            user_creation: c.payload.doc.data().user_creation, 
             descricao: c.payload.doc.data().descricao,
             tipoOperacao: c.payload.doc.data().tipoOperacao,
             valor: c.payload.doc.data().valor,
+            projeto: c.payload.doc.data().projeto,
             data: c.payload.doc.data()
               ? (
                   c.payload.doc.data()
@@ -94,7 +108,9 @@ export class FluxoDeCaixaCadastroComponent implements OnInit {
         )
       )
       .subscribe((data) => {
-        this.data$ = of(data.sort((a:any,b:any)=> b.data?.getTime() - a.data?.getTime()));
+        this.data$ = of(
+          data.sort((a: any, b: any) => b.data?.getTime() - a.data?.getTime())
+        );
         this.loadingService.setLoading(false);
       });
   }
@@ -170,6 +186,7 @@ export class FluxoDeCaixaCadastroComponent implements OnInit {
       descricao: ['', Validators.required],
       tipoOperacao: ['', Validators.required],
       valor: ['', Validators.required],
+      projeto: [],
     });
   }
 }

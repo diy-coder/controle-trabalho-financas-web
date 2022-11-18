@@ -38,7 +38,7 @@
                   <input matInput formControlName="descricao" />
                 </mat-form-field>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-2">
                 <mat-form-field>
                   <mat-label>Tipo de Operação</mat-label>
                   <mat-select formControlName="tipoOperacao">
@@ -51,10 +51,23 @@
                   </mat-select>
                 </mat-form-field>
               </div>
-              <div class="col-md-2">
+              <div class="col-md-1">
                 <mat-form-field>
                   <mat-label>Valor</mat-label>
                   <input matInput formControlName="valor" />
+                </mat-form-field>
+              </div>
+              <div class="col-md-2" *ngIf="projetoList$ | async as projetoList">
+                <mat-form-field>
+                  <mat-label>Projeto</mat-label>
+                  <mat-select formControlName="projeto">
+                    <mat-option
+                      *ngFor="let projeto of projetoList"
+                      [value]="projeto"
+                    >
+                      {{ projeto }}
+                    </mat-option>
+                  </mat-select>
                 </mat-form-field>
               </div>
               <div class="col-md-1">
@@ -82,7 +95,7 @@
           </form>
         </div>
         <div class="footer">
-            <app-tabela
+          <app-tabela
             class="col-md-12"
             *ngIf="data$ | async as data"
             [displayedColumns]="displayedColumns"
@@ -92,7 +105,6 @@
             [showHeader]="false"
             (acaoSelecionada)="executarAcao($event)"
           ></app-tabela>
-          
         </div>
       </div>
     </div>

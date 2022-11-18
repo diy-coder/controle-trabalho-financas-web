@@ -60,6 +60,7 @@ export class FluxoDeCaixaVisualizacaoComponent implements OnInit {
                 ).format('MMMM - YYYY')
               : null,
             style: c.payload.doc.data().tipoOperacao,
+            projeto: c.payload.doc.data().projeto,
             group: c.payload.doc.data()
               ? moment(
                   (
