@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import 'firebase/compat/auth'; //v9
 import { ProjetoModel } from 'src/app/models/projetoModel';
 import { NotificationService } from 'src/app/shared/notification/notification.service';
+import { DateTimeUtils } from 'src/app/utils/data-time.utils';
 import { ProjetoService } from '../projetos.service';
 @Component({
   selector: 'app-projeto-form',
@@ -40,11 +41,12 @@ export class ProjetoFormComponent implements OnInit {
         .subscribe((data) => {
           const formData = data.payload.data();
           if (formData) {
-            if (formData.inicioPrevisto) {
-              formData.inicioPrevisto = (
-                formData.inicioPrevisto as unknown as firebase.default.firestore.Timestamp
-              ).toDate();
-            }
+            formData.inicioPrevisto = DateTimeUtils.firebaseDateToDate(
+              formData.inicioPrevisto
+            );
+            formData.terminoPrevisto = DateTimeUtils.firebaseDateToDate(
+              formData.terminoPrevisto
+            );
             this.projetoFormGroup.patchValue(formData);
             this.tecnologias = formData.tecnologias ? formData.tecnologias : [];
           }

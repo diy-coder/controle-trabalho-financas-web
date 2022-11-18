@@ -22,12 +22,10 @@ export class TimeTrackerCadastroComponent implements OnInit {
   @ViewChild('fluxoDeCaixaForm') fluxoDeCaixaForm!: NgForm;
 
   fluxoDeCaixaFormGroup!: FormGroup;
-  identifier!: string | null;
   projetoList$!: Observable<string[]>;
   tipoOperacaoEnum = TipoOperacaoEnum;
 
   data$!: Observable<any>;
-  itemSelecionado!: any;
 
   botoes = [
     {
@@ -75,7 +73,6 @@ export class TimeTrackerCadastroComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.identifier = this.route.snapshot.paramMap.get('identifier');
     this.construirFormulario();
     this.loadData();
   }
@@ -85,13 +82,10 @@ export class TimeTrackerCadastroComponent implements OnInit {
       this.loadingService.setLoading(true);
     }, 0);
 
-    this.projetoService
-      .getAll()
-      .valueChanges()
-      .subscribe((data: ProjetoModel[]) => {
-        const projetos = data.map((projeto) => projeto.nome);
-        this.projetoList$ = of(projetos);
-      });
+    this.projetoService.getAll().subscribe((data: ProjetoModel[]) => {
+      const projetos = data.map((projeto) => projeto.nome);
+      this.projetoList$ = of(projetos);
+    });
 
     this.service
       .getAll()
@@ -127,14 +121,10 @@ export class TimeTrackerCadastroComponent implements OnInit {
 
   saveEntry() {
     const timeTrackerModelData = this.fluxoDeCaixaFormGroup.getRawValue();
-    if (
-      !this.identifier ||
-      this.identifier == 'undefined' ||
-      this.identifier == '0'
-    ) {
+    if (!timeTrackerModelData.id) {
       this.save(timeTrackerModelData);
     } else {
-      this.update('' + this.identifier, timeTrackerModelData);
+      this.update('' + timeTrackerModelData.id, timeTrackerModelData);
     }
   }
 
@@ -162,17 +152,15 @@ export class TimeTrackerCadastroComponent implements OnInit {
   }
 
   executarAcao(acaoPropagate: any) {
-    this.itemSelecionado = acaoPropagate.item;
     switch (acaoPropagate.acao) {
       case 'editar':
-        this.identifier = acaoPropagate.item.id;
         this.fluxoDeCaixaFormGroup.patchValue(acaoPropagate.item);
         break;
       case 'excluir':
-        this.excluirItem(this.itemSelecionado.id);
+        this.excluirItem(acaoPropagate.item.id);
         break;
       case 'stopTracker':
-        this.stopTracker(this.itemSelecionado.id, this.itemSelecionado);
+        this.stopTracker(acaoPropagate.item.id, acaoPropagate.item);
     }
   }
 
@@ -228,6 +216,7 @@ export class TimeTrackerCadastroComponent implements OnInit {
   }
   private construirFormulario() {
     this.fluxoDeCaixaFormGroup = this.formBuilder.group({
+      id: [],
       user_creation: [],
       projeto: ['', Validators.required],
       dataInicio: [new Date(), Validators.required],

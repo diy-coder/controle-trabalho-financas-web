@@ -53,7 +53,7 @@ export const ROUTES: RouteInfo[] = [
   {
     id: null,
     path: '/fluxo-de-trabalho',
-    title: 'Visualizar Fluxo',
+    title: 'Fluxo de Trabalho',
     icon: 'business_center',
     class: '',
     subItems: [],

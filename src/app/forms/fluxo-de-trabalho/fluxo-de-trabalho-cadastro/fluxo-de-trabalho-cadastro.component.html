@@ -1,1 +1,254 @@
-<p>fluxo-de-trabalho-cadastro works!</p>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12 scroll-95">
+      <div class="card">
+        <div class="card-header">
+          <div class="row">
+            <div
+              class="col-md-10 caption"
+              style="margin-top: auto; margin-bottom: auto"
+            >
+              Inserir / Cadastrar Novo Cliente
+            </div>
+            <div class="col-md-2 d-flex flex-row-reverse">
+              <button
+                mat-button
+                class="btn btn-info btn-fill"
+                (click)="backToList()"
+              >
+                Voltar para a Listagem
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="content">
+          <form [formGroup]="fluxoFormGroup" #fluxoForm="ngForm">
+            <div class="row">
+              <div class="col-md-3">
+                <mat-form-field>
+                  <mat-label>Código de Controle / Referência</mat-label>
+                  <input
+                    matInput
+                    formControlName="referencia"
+                    placeholder="BR2022-01"
+                  />
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-2">
+                <mat-form-field>
+                  <mat-label>Status</mat-label>
+                  <mat-select formControlName="status">
+                    <mat-option
+                      *ngFor="let enum of statusFluxoTrabalhoEnum | keyvalue"
+                      [value]="enum.key"
+                    >
+                      {{ enum.value }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-3" *ngIf="projetoList$ | async as projetoList">
+                <mat-form-field>
+                  <mat-label>Projeto</mat-label>
+                  <mat-select formControlName="projeto">
+                    <mat-option
+                      *ngFor="let projeto of projetoList"
+                      [value]="projeto.nome"
+                      (click)="changeProject(projeto)"
+                    >
+                      {{ projeto.nome }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-3" *ngIf="clienteList$ | async as clienteList">
+                <mat-form-field>
+                  <mat-label>Cliente</mat-label>
+                  <mat-select #clienteSelect formControlName="cliente">
+                    <mat-option
+                      *ngFor="let cliente of clienteList"
+                      [value]="cliente.cliente"
+                      (click)="changeEmailResponsavel(cliente.emailResponsavel)"
+                    >
+                      {{ cliente.cliente }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-md-3">
+                <mat-form-field>
+                  <mat-label>Email Responsável</mat-label>
+                  <input matInput formControlName="emailResponsavel" />
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-2">
+                <mat-form-field>
+                  <mat-label>Data Inicio Previsto</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="dataInicioPrevistaPicker"
+                    formControlName="dataInicioPrevista"
+                  />
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="dataInicioPrevistaPicker"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #dataInicioPrevistaPicker></mat-datepicker>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-2">
+                <mat-form-field>
+                  <mat-label>Data Término Previsto</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="dataEntregaPrevistaPicker"
+                    formControlName="dataEntregaPrevista"
+                  />
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="dataEntregaPrevistaPicker"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #dataEntregaPrevistaPicker></mat-datepicker>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-2">
+                <mat-form-field>
+                  <mat-label>Data Inicio Efetivo</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="dataInicioEfetivaPicker"
+                    formControlName="dataInicioEfetiva"
+                  />
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="dataInicioEfetivaPicker"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #dataInicioEfetivaPicker></mat-datepicker>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-2">
+                <mat-form-field>
+                  <mat-label>Data Entrega Efetiva</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="dataEntregaEfetivaPicker"
+                    formControlName="dataEntregaEfetiva"
+                  />
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="dataEntregaEfetivaPicker"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #dataEntregaEfetivaPicker></mat-datepicker>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-1">
+                <mat-form-field>
+                  <mat-label>Dificuldade</mat-label>
+                  <input matInput formControlName="dificuldade" />
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-1">
+                <mat-form-field>
+                  <mat-label>Valor</mat-label>
+                  <input matInput formControlName="valor" />
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-1">
+                <mat-form-field>
+                  <mat-label>Moeda</mat-label>
+                  <mat-select formControlName="moeda">
+                    <mat-option [value]="'USD'">Dólar</mat-option>
+                    <mat-option [value]="'EUR'">Euro</mat-option>
+                    <mat-option [value]="'BRL'">Real</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-1">
+                <mat-form-field>
+                  <mat-label>Gastos</mat-label>
+                  <input matInput formControlName="gastos" />
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-2 certer-vertical">
+                <mat-checkbox formControlName="pagamentoRecebido"
+                  >Pagamento Recebido?</mat-checkbox
+                >
+              </div>
+
+              <div class="col-md-2">
+                <mat-form-field>
+                  <mat-label>Data Pagamento</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="dataPagamentoPicker"
+                    formControlName="dataPagamento"
+                  />
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="dataPagamentoPicker"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #dataPagamentoPicker></mat-datepicker>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-2">
+                <mat-form-field>
+                  <mat-label>Total Recebido</mat-label>
+                  <input matInput formControlName="totalRecebido" />
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <mat-form-field>
+                  <mat-label>Observação</mat-label>
+                  <textarea matInput formControlName="observacoes"></textarea>
+                </mat-form-field>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="footer">
+          <div class="stats">
+            <i class="fa fa-history"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row col-md-12 d-flex flex-row-reverse">
+    <div class="col-md-2">
+      <button
+        mat-raised-button
+        color="primary"
+        style="width: 100%"
+        (click)="saveEntry()"
+        [disabled]="!fluxoForm.valid"
+      >
+        Save
+      </button>
+    </div>
+  </div>
+</div>

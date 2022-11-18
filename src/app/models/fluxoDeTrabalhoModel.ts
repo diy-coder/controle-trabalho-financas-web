@@ -2,23 +2,27 @@ import { FluxoTrabalhoStatusEnum } from '../enums/status-fluxo-trabalho.enum';
 
 export interface FluxoDeTrabalhoModel {
   user_creation: string;
-  dataInicioEfetiva: Date;
+  projeto: string;
   cliente: string;
   emailResponsavel: string;
-  referencia: string;
-  projeto: string;
-  status: FluxoTrabalhoStatusEnum;
+  dataInicioPrevista: Date;
+  dataEntregaPrevista: Date;
+  dataInicioEfetiva: Date;
   dataEntregaEfetiva: Date;
-  projetoEntregue: boolean;
-  valor: number;
   moeda: string;
+  referencia: string;
+  status: FluxoTrabalhoStatusEnum;
+  valor: number;
   gastos: number;
-  dataPagamento: Date;
   pagamentoRecebido: boolean;
-  nfeEmitida: boolean;
+  dataPagamento: Date;
   totalRecebido: number;
+  dificuldade: number;
   observacoes: string;
+
+
+  projetoEntregue: boolean;
+  nfeEmitida: boolean;
   tempoGastoEmMinutos: number;
   valorPorHora: number;
-  dificuldade: number;
 }

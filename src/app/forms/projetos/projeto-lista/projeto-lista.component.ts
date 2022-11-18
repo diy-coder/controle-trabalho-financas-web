@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { DocumentChangeAction } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
-import { map, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { MustConfirm } from 'src/app/decorators/must-confirm.decorators';
-import { ProjetoModel } from 'src/app/models/projetoModel';
 import { LoadingService } from 'src/app/services/loading-service';
 import { NotificationService } from 'src/app/shared/notification/notification.service';
 import { ProjetoService } from '../projetos.service';
@@ -55,21 +53,10 @@ export class ProjetoListaComponent implements OnInit {
       this.loadingService.setLoading(true);
     }, 0);
 
-    this.service
-      .getAll()
-      .snapshotChanges()
-      .pipe(
-        map((changes: DocumentChangeAction<ProjetoModel>[]) =>
-          changes.map((c: DocumentChangeAction<ProjetoModel>) => ({
-            id: c.payload.doc.id,
-            ...c.payload.doc.data(),
-          }))
-        )
-      )
-      .subscribe((data) => {
-        this.data$ = of(data);
-        this.loadingService.setLoading(false);
-      });
+    this.service.getAll().subscribe((data) => {
+      this.data$ = of(data);
+      this.loadingService.setLoading(false);
+    });
   }
 
   onRowSelect($event: any) {

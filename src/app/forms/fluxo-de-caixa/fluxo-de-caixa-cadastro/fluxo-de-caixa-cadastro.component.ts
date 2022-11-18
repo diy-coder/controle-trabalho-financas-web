@@ -77,13 +77,10 @@ export class FluxoDeCaixaCadastroComponent implements OnInit {
       this.loadingService.setLoading(true);
     }, 0);
 
-    this.projetoService
-      .getAll()
-      .valueChanges()
-      .subscribe((data: ProjetoModel[]) => {
-        const projetos = data.map((projeto) => projeto.nome);
-        this.projetoList$ = of(projetos);
-      });
+    this.projetoService.getAll().subscribe((data: ProjetoModel[]) => {
+      const projetos = data.map((projeto) => projeto.nome);
+      this.projetoList$ = of(projetos);
+    });
 
     this.service
       .getAll()
@@ -92,7 +89,7 @@ export class FluxoDeCaixaCadastroComponent implements OnInit {
         map((changes: DocumentChangeAction<FluxoDeCaixaModel>[]) =>
           changes.map((c: DocumentChangeAction<FluxoDeCaixaModel>) => ({
             id: c.payload.doc.id,
-            user_creation: c.payload.doc.data().user_creation, 
+            user_creation: c.payload.doc.data().user_creation,
             descricao: c.payload.doc.data().descricao,
             tipoOperacao: c.payload.doc.data().tipoOperacao,
             valor: c.payload.doc.data().valor,
