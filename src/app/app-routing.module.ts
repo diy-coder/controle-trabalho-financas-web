@@ -50,12 +50,12 @@ const routes: Routes = [
     component: MetaFormComponent,
   },
   {
-    path: 'fluxo-de-trabalho-cadastro',
+    path: 'fluxo-de-trabalho/:identifier',
     component: FluxoDeTrabalhoCadastroComponent,
     canActivate: [AuthGuard],
   },
   {
-    path: 'fluxo-de-trabalho-listagem',
+    path: 'fluxo-de-trabalho',
     component: FluxoDeTrabalhoListaComponent,
   },
   {

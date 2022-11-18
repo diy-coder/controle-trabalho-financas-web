@@ -9,7 +9,7 @@ import { TokenService } from 'src/app/core/token/token.service';
 import { FluxoDeTrabalhoModel } from 'src/app/models/fluxoDeTrabalhoModel';
 
 @Injectable({ providedIn: 'root' })
-export class FluxoDeCaixaService {
+export class FluxoDeTrabalhoService {
   private dbPath = '/fluxo_de_trabalho';
 
   fluxoRef!: AngularFirestoreCollection<FluxoDeTrabalhoModel>;

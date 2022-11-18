@@ -1,1 +1,9 @@
-<p>fluxo-de-trabalho-lista works!</p>
+<app-tabela
+  *ngIf="data$ | async as data"
+  [displayedColumns]="displayedColumns"
+  [dados]="data"
+  [headerTitle]="'Lista de Fluxos de Trabalho cadastrados no Sistema'"
+  (selectedRow)="onRowSelect($event)"
+  [showAddButtom]="true"
+  (acaoSelecionada)="executarAcao($event)"
+></app-tabela>
