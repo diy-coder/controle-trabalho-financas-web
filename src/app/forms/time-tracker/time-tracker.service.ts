@@ -10,12 +10,12 @@ import { TimeTrackerModel } from 'src/app/models/timeTrackerModel';
 
 @Injectable({ providedIn: 'root' })
 export class TimeTrackerService {
-  private dbPath = '/time-tracker';
+  private dbPath = '/time_tracker';
 
   projetosRef!: AngularFirestoreCollection<TimeTrackerModel>;
   userCreation: any;
 
-  constructor(private store: AngularFirestore, tokenService: TokenService) {
+  constructor(store: AngularFirestore, tokenService: TokenService) {
     this.userCreation = tokenService.getDecodedToken().user_id;
     this.projetosRef = store.collection(this.dbPath, (ref) =>
       ref.where('user_creation', '==', this.userCreation)

@@ -6,13 +6,13 @@ import {
   DocumentReference,
 } from '@angular/fire/compat/firestore';
 import { TokenService } from 'src/app/core/token/token.service';
-import { FluxoDeCaixaModel } from 'src/app/models/fluxoDeCaixaModel';
+import { FluxoDeTrabalhoModel } from 'src/app/models/fluxoDeTrabalhoModel';
 
 @Injectable({ providedIn: 'root' })
 export class FluxoDeCaixaService {
-  private dbPath = '/fluxo_de_caixa';
+  private dbPath = '/fluxo_de_trabalho';
 
-  fluxoRef!: AngularFirestoreCollection<FluxoDeCaixaModel>;
+  fluxoRef!: AngularFirestoreCollection<FluxoDeTrabalhoModel>;
   userCreation: any;
 
   constructor(store: AngularFirestore, tokenService: TokenService) {
@@ -22,28 +22,31 @@ export class FluxoDeCaixaService {
     );
   }
 
-  getAll(): AngularFirestoreCollection<FluxoDeCaixaModel> {
+  getAll(): AngularFirestoreCollection<FluxoDeTrabalhoModel> {
     return this.fluxoRef;
   }
 
-  getById(identifier: string): AngularFirestoreDocument<FluxoDeCaixaModel> {
+  getById(identifier: string): AngularFirestoreDocument<FluxoDeTrabalhoModel> {
     return this.fluxoRef.doc(identifier);
   }
 
   save(
-    fluxoDeCaixaModel: FluxoDeCaixaModel
-  ): Promise<DocumentReference<FluxoDeCaixaModel>> {
+    fluxoDeTrabalhoModel: FluxoDeTrabalhoModel
+  ): Promise<DocumentReference<FluxoDeTrabalhoModel>> {
     if (
-      !fluxoDeCaixaModel.user_creation ||
-      fluxoDeCaixaModel.user_creation == ''
+      !fluxoDeTrabalhoModel.user_creation ||
+      fluxoDeTrabalhoModel.user_creation == ''
     ) {
-      fluxoDeCaixaModel.user_creation = this.userCreation;
+      fluxoDeTrabalhoModel.user_creation = this.userCreation;
     }
-    return this.fluxoRef.add({ ...fluxoDeCaixaModel });
+    return this.fluxoRef.add({ ...fluxoDeTrabalhoModel });
   }
 
-  update(id: string, fluxoDeCaixaModel: FluxoDeCaixaModel): Promise<void> {
-    return this.fluxoRef.doc(id).update(fluxoDeCaixaModel);
+  update(
+    id: string,
+    fluxoDeTrabalhoModel: FluxoDeTrabalhoModel
+  ): Promise<void> {
+    return this.fluxoRef.doc(id).update(fluxoDeTrabalhoModel);
   }
 
   delete(id: string): Promise<void> {

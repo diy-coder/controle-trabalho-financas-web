@@ -15,7 +15,7 @@ export class MetaService {
   metaRef!: AngularFirestoreCollection<MetaModel>;
   userCreation: any;
 
-  constructor(private store: AngularFirestore, tokenService: TokenService) {
+  constructor(store: AngularFirestore, tokenService: TokenService) {
     this.userCreation = tokenService.getDecodedToken().user_id;
     this.metaRef = store.collection(this.dbPath, (ref) =>
       ref.where('user_creation', '==', this.userCreation)

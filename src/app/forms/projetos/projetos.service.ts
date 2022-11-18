@@ -15,7 +15,7 @@ export class ProjetoService {
   projetosRef!: AngularFirestoreCollection<ProjetoModel>;
   userCreation: any;
 
-  constructor(private store: AngularFirestore, tokenService: TokenService) {
+  constructor(store: AngularFirestore, tokenService: TokenService) {
     this.userCreation = tokenService.getDecodedToken().user_id;
     this.projetosRef = store.collection(this.dbPath, (ref) =>
       ref.where('user_creation', '==', this.userCreation)
