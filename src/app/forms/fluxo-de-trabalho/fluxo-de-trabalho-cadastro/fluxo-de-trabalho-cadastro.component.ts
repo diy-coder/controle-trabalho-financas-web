@@ -37,8 +37,10 @@ export class FluxoDeTrabalhoCadastroComponent implements OnInit {
   ngOnInit(): void {
     this.identifier = this.route.snapshot.paramMap.get('identifier');
     this.construirFormulario();
-    this.loadData(this.identifier);
+    //this.loadData(this.identifier);
+  }
 
+  loadData(identifier: string | null) {
     this.projetoList$ = this.projetoService.getAll();
 
     this.clienteService
@@ -55,9 +57,7 @@ export class FluxoDeTrabalhoCadastroComponent implements OnInit {
       .subscribe((data) => {
         this.clienteList$ = of(data);
       });
-  }
 
-  loadData(identifier: string | null) {
     if (this.identifier && this.identifier != '0') {
       this.service
         .getById('' + identifier)

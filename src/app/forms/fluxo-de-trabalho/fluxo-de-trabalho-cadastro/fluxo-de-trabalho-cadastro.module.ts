@@ -8,6 +8,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatTabsModule } from '@angular/material/tabs';
+import { UploadModule } from 'src/app/shared/file/upload/upload.module';
 import { FluxoDeTrabalhoCadastroComponent } from './fluxo-de-trabalho-cadastro.component';
 
 @NgModule({
@@ -22,6 +24,8 @@ import { FluxoDeTrabalhoCadastroComponent } from './fluxo-de-trabalho-cadastro.c
     MatDatepickerModule,
     MatNativeDateModule,
     MatCheckboxModule,
+    MatTabsModule,
+    UploadModule
   ],
   exports: [FluxoDeTrabalhoCadastroComponent],
 })
