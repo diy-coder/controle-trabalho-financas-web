@@ -51,6 +51,31 @@ export const ROUTES: RouteInfo[] = [
   },
 
   {
+    id: 'fluxo-de-trabalho',
+    path: '',
+    title: 'Fluxo de Trabalho',
+    icon: 'work',
+    class: '',
+    subItems: [
+      {
+        path: '/fluxo-de-trabalho-cadastro',
+        title: 'Gerenciar Trabalhos',
+        icon: 'account_tree',
+        class: '',
+        descricao: 'Gerenciamento do Fluxo de Trabalho',
+      },
+      {
+        path: '/fluxo-de-trabalho-listagem',
+        title: 'Visualizar Fluxo',
+        icon: 'business_center',
+        class: '',
+        descricao: 'Visualizar Fluxo de Trabalho',
+      },
+    ],
+    descricao: '',
+  },
+
+  {
     id: 'fluxo-de-caixa',
     path: '',
     title: 'Fluxo de Caixa',
@@ -74,6 +99,7 @@ export const ROUTES: RouteInfo[] = [
     ],
     descricao: '',
   },
+
   {
     id: 'ftime-tracker',
     path: '',

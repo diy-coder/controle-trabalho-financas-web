@@ -6,6 +6,8 @@ import { ClienteFormComponent } from './forms/clientes/cliente-form/cliente-form
 import { ClienteListaComponent } from './forms/clientes/cliente-lista/cliente-lista.component';
 import { FluxoDeCaixaCadastroComponent } from './forms/fluxo-de-caixa/fluxo-de-caixa-cadastro/fluxo-de-caixa-cadastro.component';
 import { FluxoDeCaixaVisualizacaoComponent } from './forms/fluxo-de-caixa/fluxo-de-caixa-visualizacao/fluxo-de-caixa-visualizacao.component';
+import { FluxoDeTrabalhoCadastroComponent } from './forms/fluxo-de-trabalho/fluxo-de-trabalho-cadastro/fluxo-de-trabalho-cadastro.component';
+import { FluxoDeTrabalhoListaComponent } from './forms/fluxo-de-trabalho/fluxo-de-trabalho-lista/fluxo-de-trabalho-lista.component';
 import { MetaFormComponent } from './forms/metas/meta-form/meta-form.component';
 import { MetaListComponent } from './forms/metas/meta-list/meta-list.component';
 import { ProjetoFormComponent } from './forms/projetos/projeto-form/projeto-form.component';
@@ -46,6 +48,15 @@ const routes: Routes = [
   {
     path: 'metas/:identifier',
     component: MetaFormComponent,
+  },
+  {
+    path: 'fluxo-de-trabalho-cadastro',
+    component: FluxoDeTrabalhoCadastroComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'fluxo-de-trabalho-listagem',
+    component: FluxoDeTrabalhoListaComponent,
   },
   {
     path: 'fluxo-de-caixa-cadastro',
