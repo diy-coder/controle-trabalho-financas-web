@@ -19,6 +19,7 @@ export interface FluxoDeTrabalhoModel {
   totalRecebido: number;
   dificuldade: number;
   observacoes: string;
+  linkArmazenamentoNuvem: string;
 
 
   projetoEntregue: boolean;
