@@ -48,10 +48,6 @@ export class MatFileUploadQueueComponent
   files: Array<any> = [];
 
   @Input() listaArquivos!: FileModel[];
-  @Input() fileAlias = 'file';
-  hasFiles = false;
-  contagem = 0;
-  ArquivosNaoCarregados = false;
 
   constructor(public dialog: MatDialog) {}
 
@@ -63,7 +59,6 @@ export class MatFileUploadQueueComponent
           this.fileRemoveSubscription.unsubscribe();
         }
         this._listenTofileRemoved();
-        this._listenTofileUploaded();
       });
   }
 
@@ -78,26 +73,13 @@ export class MatFileUploadQueueComponent
       (event: MatFileUploadMultiComponent) => {
         this.files.splice(event.id, 1);
         this.reordenarArray();
-
-        if (event.gravadoNaBase || event.fromDataBase) {
-          this.contagem--;
-        }
-        this.hasFiles = this.contagem > 0;
       }
     );
-    this.ArquivosNaoCarregados =
-      this.files.filter((x) => x.gravadoNaBase !== true).length > 0;
-  }
-
-  private _listenTofileUploaded(): void {
-    this.ArquivosNaoCarregados =
-      this.files.filter((x) => x.gravadoNaBase !== true).length > 0;
   }
 
   add(file: any) {
     file.ordem = this.files.length + 1;
     this.files.push(file);
-    this.ArquivosNaoCarregados = true;
   }
 
   async enviarArquivo(arquivo: MatFileUploadMultiComponent) {

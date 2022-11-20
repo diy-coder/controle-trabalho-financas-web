@@ -43,20 +43,16 @@
 
     <!-- Carregar/Descarregar arquivo -->
     <div class="col-md-1">
-      <div
-        *ngIf="
-          !gravadoNaBase && !fromDataBase && !isUploading;
-          else iconeUploadDesabilitado
-        "
-      >
+      <div *ngIf="!file.gravadoNaBase && !isUploading; else iconeUploadDesabilitado">
         <a [ngClass]="{ disabled: isUploading }">
           <mat-icon class="pointer" (click)="upload()">
             <img class="mr-3" src="./assets/img/carregar.svg" />
           </mat-icon>
         </a>
       </div>
+      
       <ng-template #iconeUploadDesabilitado>
-        <div *ngIf="!gravadoNaBase || ErroUpload; else iconeDownload">
+        <div *ngIf="!file.gravadoNaBase; else iconeDownload">
           <img class="mr-3" src="./assets/img/carregar-d.svg" />
         </div>
       </ng-template>

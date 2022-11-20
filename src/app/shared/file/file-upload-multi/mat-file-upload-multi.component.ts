@@ -9,7 +9,6 @@ import {
 } from 'firebase/storage';
 import { MustConfirm } from 'src/app/decorators/must-confirm.decorators';
 import { NotificationService } from '../../notification/notification.service';
-import { FileService } from '../file.service';
 import { ArquivoHandler } from '../handler/handler';
 
 /**
@@ -24,20 +23,14 @@ import { ArquivoHandler } from '../handler/handler';
 export class MatFileUploadMultiComponent {
   constructor(
     public dialog: MatDialog,
-    private fileService: FileService,
     private notificationService: NotificationService,
     private storage: AngularFireStorage
   ) {}
 
   isUploading = false;
-  gravadoNaBase = false;
-  fromDataBase = false;
   ordem!: number;
 
   @Input() pasta!: string;
-
-  @Input()
-  fileAlias = 'file';
 
   @Input()
   get file(): any {
@@ -48,8 +41,6 @@ export class MatFileUploadMultiComponent {
     if (this.file.gravadoNaBase) {
       this.status = 'Gravado';
       this.progressPercentage = 100;
-      this.gravadoNaBase = true;
-      this.fromDataBase = true;
     }
   }
 
@@ -68,30 +59,15 @@ export class MatFileUploadMultiComponent {
   @Output() removeEvent = new EventEmitter<MatFileUploadMultiComponent>();
   @Output() uploaded = new EventEmitter();
 
-  @Output() SaidaErroMensagem = '';
-
   progressPercentage = 0;
-
   status = 'Não carregado';
-  public loaded = 0;
+
   private _file: any;
   private _id!: number;
   private fileUploadSubscription: any;
 
   public upload() {
     return new Promise((dados) => {
-      if (this._file.size / 1024 > 100240) {
-        this.status = 'Erro no carregamento';
-        this.gravadoNaBase = false;
-        this.isUploading = false;
-        this.SaidaErroMensagem =
-          'Tamanho do arquivo supera limite máximo suportado: 10MB';
-        this.uploaded.emit({ file: this._file, event });
-
-        dados(this._file.idArquivoDocumento);
-        return;
-      }
-
       this.isUploading = true;
       this.status = '0%';
 
@@ -100,6 +76,7 @@ export class MatFileUploadMultiComponent {
       const uploadTask = uploadBytesResumable(storageRef, this._file);
 
       this.status = 'Carregando';
+
       uploadTask.on(
         'state_changed',
         (snapshot) => {
@@ -119,6 +96,7 @@ export class MatFileUploadMultiComponent {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             this.status = 'Carregado';
             this.isUploading = false;
+            this._file.gravadoNaBase = true
           });
         }
       );

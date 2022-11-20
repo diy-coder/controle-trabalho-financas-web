@@ -1,10 +1,6 @@
 import { AfterContentInit, Component, Input, OnChanges } from '@angular/core';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { NotificationService } from '../../notification/notification.service';
-import { FileService } from '../file.service';
-
-const API = 'environment';
-
 @Component({
   selector: 'app-upload',
   templateUrl: './upload.component.html',
@@ -16,7 +12,6 @@ export class UploadComponent implements OnChanges, AfterContentInit {
   @Input() pasta!: any;
 
   constructor(
-    private service: FileService,
     private storage: AngularFireStorage,
     private notificationService: NotificationService
   ) {}
@@ -56,11 +51,10 @@ export class UploadComponent implements OnChanges, AfterContentInit {
       .ref(this.pasta)
       .listAll()
       .subscribe((res) => {
-        res.prefixes.forEach((folderRef) => {});
-        res.items.forEach((itemRef) => {});
         const items = res.items.map((item) => ({
           nomeArquivo: item.name,
           name: item.name,
+          gravadoNaBase: true
         }));
         this.listaArquivos = items;
       });
