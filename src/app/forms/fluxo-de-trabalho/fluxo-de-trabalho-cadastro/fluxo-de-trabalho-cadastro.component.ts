@@ -70,7 +70,6 @@ export class FluxoDeTrabalhoCadastroComponent
   }
 
   loadData(identifier: string | null) {
-    this.startLoading()
     this.projetoList$ = this.projetoService.getAll();
 
     this.clienteService.getAll().subscribe((data) => {
@@ -78,6 +77,7 @@ export class FluxoDeTrabalhoCadastroComponent
     });
 
     if (identifier && identifier != '0') {
+      this.startLoading()
       this.service
         .getById('' + identifier)
         .snapshotChanges()

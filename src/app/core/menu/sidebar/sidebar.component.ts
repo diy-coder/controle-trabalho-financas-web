@@ -16,7 +16,7 @@ export const ROUTES: RouteInfo[] = [
   {
     id: null,
     path: '/home',
-    title: 'Inicio',
+    title: 'Dashboard',
     icon: 'dashboard',
     class: '',
     subItems: [],
@@ -86,7 +86,7 @@ export const ROUTES: RouteInfo[] = [
   },
 
   {
-    id: 'ftime-tracker',
+    id: 'time-tracker',
     path: '',
     title: 'Time Tracker',
     icon: 'today',
