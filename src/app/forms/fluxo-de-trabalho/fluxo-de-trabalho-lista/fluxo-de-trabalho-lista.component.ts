@@ -56,8 +56,8 @@ export class FluxoDeTrabalhoListaComponent implements OnInit {
       .pipe(
         map((changes: DocumentChangeAction<FluxoDeTrabalhoModel>[]) =>
           changes.map((c: DocumentChangeAction<FluxoDeTrabalhoModel>) => ({
-            id: c.payload.doc.id,
             ...c.payload.doc.data(),
+            id: c.payload.doc.id,
           }))
         )
       )

@@ -1,15 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { DocumentChangeAction } from '@angular/fire/compat/firestore';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { filter, map, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { FluxoTrabalhoStatusEnum } from 'src/app/enums/status-fluxo-trabalho.enum';
-import { ClienteModel } from 'src/app/models/clienteModel';
-import { FluxoDeTrabalhoModel } from 'src/app/models/fluxoDeTrabalhoModel';
-import { TimeTrackerModel } from 'src/app/models/timeTrackerModel';
+import { LoadingService } from 'src/app/services/loading-service';
 import { NotificationService } from 'src/app/shared/notification/notification.service';
-import { DateTimeUtils } from 'src/app/utils/data-time.utils';
 import { ClienteService } from '../../clientes/clientes.service';
+import { FormCrudOpts } from '../../forms-super';
 import { ProjetoService } from '../../projetos/projetos.service';
 import { TimeTrackerService } from '../../time-tracker/time-tracker.service';
 import { FluxoDeTrabalhoService } from '../fluxo-de-trabalho.service';
@@ -19,10 +16,12 @@ import { FluxoDeTrabalhoService } from '../fluxo-de-trabalho.service';
   templateUrl: './fluxo-de-trabalho-cadastro.component.html',
   styleUrls: ['./fluxo-de-trabalho-cadastro.component.scss'],
 })
-export class FluxoDeTrabalhoCadastroComponent implements OnInit {
-  fluxoFormGroup!: FormGroup;
+export class FluxoDeTrabalhoCadastroComponent
+  extends FormCrudOpts
+  implements OnInit
+{
   statusFluxoTrabalhoEnum: any = FluxoTrabalhoStatusEnum;
-  identifier!: string | null;
+  identifier: any;
 
   projetoList$!: Observable<any>;
   timeTracker$!: Observable<any>;
@@ -32,19 +31,22 @@ export class FluxoDeTrabalhoCadastroComponent implements OnInit {
     { head: 'Projeto', el: 'projeto' },
     { head: 'Data Início', el: 'dataInicio', format: { tipo: 'TIMESTAMP' } },
     { head: 'Data Término', el: 'dataTermino', format: { tipo: 'TIMESTAMP' } },
-    { head: 'Tempo Gasto', el: 'timeSpent' }
+    { head: 'Tempo Gasto', el: 'timeSpent' },
   ];
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
-    private service: FluxoDeTrabalhoService,
-    private notificationService: NotificationService,
+    service: FluxoDeTrabalhoService,
+    notificationService: NotificationService,
     private projetoService: ProjetoService,
     private clienteService: ClienteService,
-    private timeTrackerService : TimeTrackerService
-  ) {}
+    private timeTrackerService: TimeTrackerService,
+    loadingService: LoadingService
+  ) {
+    super(service, notificationService, loadingService);
+  }
 
   ngOnInit(): void {
     this.identifier = this.route.snapshot.paramMap.get('identifier');
@@ -55,60 +57,32 @@ export class FluxoDeTrabalhoCadastroComponent implements OnInit {
   loadData(identifier: string | null) {
     this.projetoList$ = this.projetoService.getAll();
 
-    this.clienteService
-      .getAll()
-      .snapshotChanges()
-      .pipe(
-        map((changes: DocumentChangeAction<ClienteModel>[]) =>
-          changes.map((c: DocumentChangeAction<ClienteModel>) => ({
-            id: c.payload.doc.id,
-            ...c.payload.doc.data(),
-          }))
-        )
-      )
-      .subscribe((data) => {
-        this.clienteList$ = of(data);
-      });
+    this.clienteService.getAll().subscribe((data) => {
+      this.clienteList$ = of(data);
+    });
 
-    if (this.identifier && this.identifier != '0') {
+    if (identifier && identifier != '0') {
       this.service
         .getById('' + identifier)
         .snapshotChanges()
-        .subscribe((data) => {
+        .subscribe((data: any) => {
           const formData = data.payload.data();
+          formData.id = data.payload.id;
           if (formData) {
-            this.fluxoFormGroup.patchValue(formData);
-            this.loadTimeTracker(formData.projeto)
+            this.formGroup.patchValue(formData);
+            this.loadTimeTracker(formData.projeto);
           }
         });
     }
   }
 
-  loadTimeTracker(projeto: string){ 
-    this.timeTrackerService.getAll()
-    .snapshotChanges()
-    .pipe(
-      map((changes: DocumentChangeAction<TimeTrackerModel>[]) =>
-        changes.map((c: DocumentChangeAction<TimeTrackerModel>) => ({
-          id: c.payload.doc.id,
-          user_creation: c.payload.doc.data().user_creation,
-          projeto: c.payload.doc.data().projeto,
-          dataInicio: DateTimeUtils.firebaseDateToDate(c.payload.doc.data().dataInicio),
-          dataTermino: DateTimeUtils.firebaseDateToDate(
-            c.payload.doc.data().dataTermino
-          ),
-          timeSpent: c.payload.doc.data().timeSpent,
-        }))
-      ),
-    )
-    .subscribe((data) => {
-      const filteredData = data.filter((item:any) => item.projeto == projeto);
-      console.log(filteredData);
-      
+  loadTimeTracker(projeto: string) {
+    this.timeTrackerService.getAll().subscribe((data) => {
+      const filteredData = data.filter((item: any) => item.projeto == projeto);
+
       this.timeTracker$ = of(
         filteredData.sort(
-          (a: any, b: any) =>
-            b.dataInicio?.getTime() - a.dataInicio?.getTime()
+          (a: any, b: any) => b.dataInicio?.getTime() - a.dataInicio?.getTime()
         )
       );
     });
@@ -118,38 +92,12 @@ export class FluxoDeTrabalhoCadastroComponent implements OnInit {
     this.router.navigate(['fluxo-de-trabalho']);
   }
 
-  saveEntry() {
-    const fluxoDeTrabalhoModelData = this.fluxoFormGroup.getRawValue();
-    if (
-      !this.identifier ||
-      this.identifier == 'undefined' ||
-      this.identifier == '0'
-    ) {
-      this.save(fluxoDeTrabalhoModelData);
-    } else {
-      this.update('' + this.identifier, fluxoDeTrabalhoModelData);
-    }
-  }
-
-  save(fluxoDeTrabalhoModel: FluxoDeTrabalhoModel) {
-    this.service.save(fluxoDeTrabalhoModel).then((data) => {
-      this.notificationService.showSucess('Registro Criado com Sucesso');
-      this.backToList();
-    });
-  }
-
-  update(identifier: string, fluxoDeTrabalhoModel: FluxoDeTrabalhoModel) {
-    this.service.update(identifier, fluxoDeTrabalhoModel).then((data) => {
-      this.notificationService.showSucess('Registro Atualizado com Sucesso');
-    });
-  }
-
   changeEmailResponsavel(email: string) {
-    this.fluxoFormGroup.patchValue({ emailResponsavel: email });
+    this.formGroup.patchValue({ emailResponsavel: email });
   }
 
   changeProject(project: any) {
-    this.fluxoFormGroup.patchValue({
+    this.formGroup.patchValue({
       dataInicioPrevista: project.inicioPrevisto,
       dataEntregaPrevista: project.terminoPrevisto,
       moeda: project.moeda,
@@ -158,7 +106,8 @@ export class FluxoDeTrabalhoCadastroComponent implements OnInit {
   }
 
   private construirFormulario() {
-    this.fluxoFormGroup = this.formBuilder.group({
+    this.formGroup = this.formBuilder.group({
+      id: [0],
       user_creation: [],
       cliente: ['', Validators.required],
       projeto: ['', Validators.required],
@@ -177,7 +126,7 @@ export class FluxoDeTrabalhoCadastroComponent implements OnInit {
       dataPagamento: [],
       totalRecebido: [],
       observacoes: [],
-      linkArmazenamentoNuvem:[]
+      linkArmazenamentoNuvem: [],
     });
   }
 }

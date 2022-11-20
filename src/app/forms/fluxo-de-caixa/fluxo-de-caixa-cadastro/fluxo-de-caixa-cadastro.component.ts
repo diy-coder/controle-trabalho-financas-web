@@ -1,8 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { DocumentChangeAction } from '@angular/fire/compat/firestore';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { map, Observable, of } from 'rxjs';
+import { Router } from '@angular/router';
+import { Observable, of } from 'rxjs';
 import { MustConfirm } from 'src/app/decorators/must-confirm.decorators';
 import { TipoOperacaoEnum } from 'src/app/enums/tipo-operacao.enum';
 import { FluxoDeCaixaModel } from 'src/app/models/fluxoDeCaixaModel';
@@ -21,7 +20,6 @@ export class FluxoDeCaixaCadastroComponent implements OnInit {
   @ViewChild('fluxoDeCaixaForm') fluxoDeCaixaForm!: NgForm;
 
   fluxoDeCaixaFormGroup!: FormGroup;
-  identifier!: string | null;
   projetoList$!: Observable<string[]>;
   tipoOperacaoEnum = TipoOperacaoEnum;
 
@@ -57,7 +55,6 @@ export class FluxoDeCaixaCadastroComponent implements OnInit {
   ];
 
   constructor(
-    private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
     private service: FluxoDeCaixaService,
@@ -67,7 +64,6 @@ export class FluxoDeCaixaCadastroComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.identifier = this.route.snapshot.paramMap.get('identifier');
     this.construirFormulario();
     this.loadData();
   }
@@ -82,34 +78,12 @@ export class FluxoDeCaixaCadastroComponent implements OnInit {
       this.projetoList$ = of(projetos);
     });
 
-    this.service
-      .getAll()
-      .snapshotChanges()
-      .pipe(
-        map((changes: DocumentChangeAction<FluxoDeCaixaModel>[]) =>
-          changes.map((c: DocumentChangeAction<FluxoDeCaixaModel>) => ({
-            id: c.payload.doc.id,
-            user_creation: c.payload.doc.data().user_creation,
-            descricao: c.payload.doc.data().descricao,
-            tipoOperacao: c.payload.doc.data().tipoOperacao,
-            valor: c.payload.doc.data().valor,
-            projeto: c.payload.doc.data().projeto,
-            data: c.payload.doc.data()
-              ? (
-                  c.payload.doc.data()
-                    .data as unknown as firebase.default.firestore.Timestamp
-                ).toDate()
-              : null,
-            style: c.payload.doc.data().tipoOperacao,
-          }))
-        )
-      )
-      .subscribe((data) => {
-        this.data$ = of(
-          data.sort((a: any, b: any) => b.data?.getTime() - a.data?.getTime())
-        );
-        this.loadingService.setLoading(false);
-      });
+    this.service.getAll().subscribe((data) => {
+      this.data$ = of(
+        data.sort((a: any, b: any) => b.data?.getTime() - a.data?.getTime())
+      );
+      this.loadingService.setLoading(false);
+    });
   }
 
   saveEntry() {
@@ -118,14 +92,10 @@ export class FluxoDeCaixaCadastroComponent implements OnInit {
     }, 0);
 
     const fluxoDeCaixaModelData = this.fluxoDeCaixaFormGroup.getRawValue();
-    if (
-      !this.identifier ||
-      this.identifier == 'undefined' ||
-      this.identifier == '0'
-    ) {
+    if (!fluxoDeCaixaModelData.id) {
       this.save(fluxoDeCaixaModelData);
     } else {
-      this.update('' + this.identifier, fluxoDeCaixaModelData);
+      this.update('' + fluxoDeCaixaModelData.identifier, fluxoDeCaixaModelData);
     }
   }
 
@@ -156,7 +126,6 @@ export class FluxoDeCaixaCadastroComponent implements OnInit {
     this.itemSelecionado = acaoPropagate.item;
     switch (acaoPropagate.acao) {
       case 'editar':
-        this.identifier = acaoPropagate.item.id;
         this.fluxoDeCaixaFormGroup.patchValue(acaoPropagate.item);
         break;
       case 'excluir':
@@ -178,6 +147,7 @@ export class FluxoDeCaixaCadastroComponent implements OnInit {
 
   private construirFormulario() {
     this.fluxoDeCaixaFormGroup = this.formBuilder.group({
+      id: [],
       user_creation: [],
       data: ['', Validators.required],
       descricao: ['', Validators.required],

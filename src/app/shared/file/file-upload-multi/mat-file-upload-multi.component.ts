@@ -8,7 +8,6 @@ import {
   uploadBytesResumable,
 } from 'firebase/storage';
 import { MustConfirm } from 'src/app/decorators/must-confirm.decorators';
-import { BytePipe } from 'src/app/pipes/byte-pipe.pipe';
 import { NotificationService } from '../../notification/notification.service';
 import { FileService } from '../file.service';
 import { ArquivoHandler } from '../handler/handler';
@@ -145,10 +144,5 @@ export class MatFileUploadMultiComponent {
       .subscribe((url) => {
         ArquivoHandler.downloadFromLink(url);
       });
-  }
-
-  getTamanhoArquivo(tamanho: any) {
-    const bytes = new BytePipe();
-    return bytes.transform(tamanho);
   }
 }

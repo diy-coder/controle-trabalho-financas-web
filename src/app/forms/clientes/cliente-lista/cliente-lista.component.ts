@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { DocumentChangeAction } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
-import { map, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { MustConfirm } from 'src/app/decorators/must-confirm.decorators';
-import { ClienteModel } from 'src/app/models/clienteModel';
 import { LoadingService } from 'src/app/services/loading-service';
 import { NotificationService } from 'src/app/shared/notification/notification.service';
 import { ClienteService } from '../clientes.service';
@@ -41,29 +39,17 @@ export class ClienteListaComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    setTimeout(() => {
+      this.loadingService.setLoading(true);
+    }, 0);
     this.loadData();
   }
 
   loadData() {
-    setTimeout(() => {
-      this.loadingService.setLoading(true);
-    }, 0);
-    
-    this.clienteService
-      .getAll()
-      .snapshotChanges()
-      .pipe(
-        map((changes: DocumentChangeAction<ClienteModel>[]) =>
-          changes.map((c: DocumentChangeAction<ClienteModel>) => ({
-            id: c.payload.doc.id,
-            ...c.payload.doc.data(),
-          }))
-        )
-      )
-      .subscribe((data) => {
-        this.data$ = of(data);
-        this.loadingService.setLoading(false);
-      });
+    this.clienteService.getAll().subscribe((data) => {
+      this.data$ = of(data);
+      this.loadingService.setLoading(false);
+    });
   }
 
   onRowSelect($event: any) {

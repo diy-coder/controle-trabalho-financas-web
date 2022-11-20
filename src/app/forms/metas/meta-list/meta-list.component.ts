@@ -55,8 +55,8 @@ export class MetaListComponent implements OnInit {
       .pipe(
         map((changes: DocumentChangeAction<MetaModel>[]) =>
           changes.map((c: DocumentChangeAction<MetaModel>) => ({
-            id: c.payload.doc.id,
             ...c.payload.doc.data(),
+            id: c.payload.doc.id,
           }))
         )
       )

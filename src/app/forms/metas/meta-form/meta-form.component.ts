@@ -3,8 +3,11 @@ import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MustConfirm } from 'src/app/decorators/must-confirm.decorators';
 import { TipoMetaEnum } from 'src/app/enums/tipo-meta.enum.ts';
-import { MetaItemModel, MetaModel } from 'src/app/models/metaModel';
+import { MetaItemModel } from 'src/app/models/metaModel';
+import { LoadingService } from 'src/app/services/loading-service';
 import { NotificationService } from 'src/app/shared/notification/notification.service';
+import { DateTimeUtils } from 'src/app/utils/data-time.utils';
+import { FormCrudOpts } from '../../forms-super';
 import { MetaService } from '../metas.service';
 
 @Component({
@@ -12,12 +15,10 @@ import { MetaService } from '../metas.service';
   templateUrl: './meta-form.component.html',
   styleUrls: ['./meta-form.component.scss'],
 })
-export class MetaFormComponent implements OnInit {
+export class MetaFormComponent extends FormCrudOpts implements OnInit {
   @ViewChild('metaItemsForm') metaItemsForm!: NgForm;
 
-  metaFormGroup!: FormGroup;
   metaItemsFormGroup!: FormGroup;
-  identifier!: string | null;
   tipoMetaEnum = TipoMetaEnum;
   metaItemList: MetaItemModel[] = [];
 
@@ -43,34 +44,36 @@ export class MetaFormComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
-    private service: MetaService,
-    private notificationService: NotificationService
-  ) {}
+    service: MetaService,
+    notificationService: NotificationService,
+    loadingService: LoadingService
+  ) {
+    super(service, notificationService, loadingService);
+  }
 
   ngOnInit(): void {
-    this.identifier = this.route.snapshot.paramMap.get('identifier');
+    const identifier = this.route.snapshot.paramMap.get('identifier');
     this.construirFormulario();
-    this.loadData(this.identifier);
+    this.loadData(identifier);
   }
 
   loadData(identifier: string | null) {
-    if (this.identifier && this.identifier != '0') {
+    if (identifier && identifier != '0') {
+      this.startLoading()
       this.service
         .getById('' + identifier)
         .snapshotChanges()
-        .subscribe((data) => {
+        .subscribe((data: any) => {
           const formData = data.payload.data();
+          formData.id = data.payload.id;
           if (formData) {
-            if (formData.prazo) {
-              formData.prazo = (
-                formData.prazo as unknown as firebase.default.firestore.Timestamp
-              ).toDate();
-            }
+            formData.prazo = DateTimeUtils.firebaseDateToDate(formData.prazo);
             if (formData.items) {
               this.metaItemList = formData.items;
             }
-            this.metaFormGroup.patchValue(formData);
+            this.formGroup.patchValue(formData);
           }
+          this.stoptLoading()
         });
     }
   }
@@ -79,35 +82,13 @@ export class MetaFormComponent implements OnInit {
     this.router.navigate(['metas']);
   }
 
-  saveEntry() {
-    const metaModelData = this.metaFormGroup.getRawValue();
-    metaModelData.items = this.metaItemList;
-    if (
-      !this.identifier ||
-      this.identifier == 'undefined' ||
-      this.identifier == '0'
-    ) {
-      this.save(metaModelData);
-    } else {
-      this.update('' + this.identifier, metaModelData);
-    }
-  }
-
-  save(metaModel: MetaModel) {
-    this.service.save(metaModel).then((data) => {
-      this.notificationService.showSucess('Registro Criado com Sucesso');
-      this.backToList();
-    });
-  }
-
-  update(identifier: string, metaModel: MetaModel) {
-    this.service.update(identifier, metaModel).then((data) => {
-      this.notificationService.showSucess('Registro Atualizado com Sucesso');
-    });
+  override preSaveAction() {
+    this.formGroup.patchValue({ items: this.metaItemList });
   }
 
   private construirFormulario() {
-    this.metaFormGroup = this.formBuilder.group({
+    this.formGroup = this.formBuilder.group({
+      id: [0],
       user_creation: [],
       nome: ['', Validators.required],
       descricao: [],

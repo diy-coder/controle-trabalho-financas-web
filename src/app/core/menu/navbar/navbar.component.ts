@@ -130,7 +130,6 @@ export class NavbarComponent implements OnInit {
   }
 
   getTitle() {
-    this.loadActiveProfile();
     var titlee = this.location.prepareExternalUrl(this.location.path());
     if (titlee.charAt(0) === "#") {
       titlee = titlee.slice(1);
@@ -144,15 +143,7 @@ export class NavbarComponent implements OnInit {
     return "";
   }
 
-  loadActiveProfile() {
-    
-  }
-
   goto(route: any) {
     this.router.navigate([route]);
-  }
-
-  signOut() {
-   
   }
 }

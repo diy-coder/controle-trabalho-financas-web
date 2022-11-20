@@ -1,21 +1,21 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { ActivatedRoute, Router } from '@angular/router';
 import 'firebase/compat/auth'; //v9
-import { ProjetoModel } from 'src/app/models/projetoModel';
+import { LoadingService } from 'src/app/services/loading-service';
 import { NotificationService } from 'src/app/shared/notification/notification.service';
 import { DateTimeUtils } from 'src/app/utils/data-time.utils';
+import { FormCrudOpts } from '../../forms-super';
 import { ProjetoService } from '../projetos.service';
 @Component({
   selector: 'app-projeto-form',
   templateUrl: './projeto-form.component.html',
   styleUrls: ['./projeto-form.component.scss'],
 })
-export class ProjetoFormComponent implements OnInit {
+export class ProjetoFormComponent extends FormCrudOpts implements OnInit {
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
-  projetoFormGroup!: FormGroup;
   identifier!: string | null;
   tecnologias: string[] = [];
 
@@ -23,9 +23,12 @@ export class ProjetoFormComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
-    private service: ProjetoService,
-    private notificationService: NotificationService
-  ) {}
+    service: ProjetoService,
+    notificationService: NotificationService,
+    loadingService : LoadingService
+  ) {
+    super(service, notificationService, loadingService);
+  }
 
   ngOnInit(): void {
     this.identifier = this.route.snapshot.paramMap.get('identifier');
@@ -34,12 +37,14 @@ export class ProjetoFormComponent implements OnInit {
   }
 
   loadData(identifier: string | null) {
-    if (this.identifier && this.identifier != '0') {
+    if (identifier && identifier != '0') {
+      this.startLoading()
       this.service
         .getById('' + identifier)
         .snapshotChanges()
-        .subscribe((data) => {
+        .subscribe((data: any) => {
           const formData = data.payload.data();
+          formData.id = data.payload.id;
           if (formData) {
             formData.inicioPrevisto = DateTimeUtils.firebaseDateToDate(
               formData.inicioPrevisto
@@ -47,42 +52,16 @@ export class ProjetoFormComponent implements OnInit {
             formData.terminoPrevisto = DateTimeUtils.firebaseDateToDate(
               formData.terminoPrevisto
             );
-            this.projetoFormGroup.patchValue(formData);
+            this.formGroup.patchValue(formData);
             this.tecnologias = formData.tecnologias ? formData.tecnologias : [];
           }
+          this.stoptLoading()
         });
     }
   }
 
   backToList() {
     this.router.navigate(['projetos']);
-  }
-
-  saveEntry() {
-    const projetoModelData = this.projetoFormGroup.getRawValue();
-    projetoModelData.tecnologias = this.tecnologias;
-    if (
-      !this.identifier ||
-      this.identifier == 'undefined' ||
-      this.identifier == '0'
-    ) {
-      this.save(projetoModelData);
-    } else {
-      this.update('' + this.identifier, projetoModelData);
-    }
-  }
-
-  save(projetoModel: ProjetoModel) {
-    this.service.save(projetoModel).then((data) => {
-      this.notificationService.showSucess('Registro Criado com Sucesso');
-      this.backToList();
-    });
-  }
-
-  update(identifier: string, projetoModel: ProjetoModel) {
-    this.service.update(identifier, projetoModel).then((data) => {
-      this.notificationService.showSucess('Registro Atualizado com Sucesso');
-    });
   }
 
   addChip(event: MatChipInputEvent): void {
@@ -92,19 +71,21 @@ export class ProjetoFormComponent implements OnInit {
       this.tecnologias.push(value);
     }
 
+    this.formGroup.patchValue({ tecnologias: this.tecnologias });
+
     event.chipInput!.clear();
   }
 
   removeChip(tecnologia: string): void {
     const index = this.tecnologias.indexOf(tecnologia);
-
     if (index >= 0) {
       this.tecnologias.splice(index, 1);
     }
   }
 
   private construirFormulario() {
-    this.projetoFormGroup = this.formBuilder.group({
+    this.formGroup = this.formBuilder.group({
+      id: [0],
       user_creation: [],
       nome: ['', Validators.required],
       descricao: [],
@@ -115,6 +96,7 @@ export class ProjetoFormComponent implements OnInit {
       tencologias: [],
       moeda: ['BRL'],
       valorEstimado: [],
+      tecnologias: [],
     });
   }
 }

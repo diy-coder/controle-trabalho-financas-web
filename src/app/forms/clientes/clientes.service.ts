@@ -3,8 +3,10 @@ import {
   AngularFirestore,
   AngularFirestoreCollection,
   AngularFirestoreDocument,
-  DocumentReference,
+  DocumentChangeAction,
+  DocumentReference
 } from '@angular/fire/compat/firestore';
+import { map, Observable, tap } from 'rxjs';
 import { TokenService } from 'src/app/core/token/token.service';
 import { ClienteModel } from 'src/app/models/clienteModel';
 
@@ -22,12 +24,25 @@ export class ClienteService {
     );
   }
 
-  getAll(): AngularFirestoreCollection<ClienteModel> {
-    return this.clientesRef;
+  getAll(): Observable<any> {
+    return this.clientesRef.snapshotChanges().pipe(
+      map((changes: DocumentChangeAction<ClienteModel>[]) =>
+        changes.map((c: DocumentChangeAction<ClienteModel>) => ({
+          ...c.payload.doc.data(),
+          id: c.payload.doc.id,
+        }))
+      )
+    );
   }
 
-  getById(identifier: string): AngularFirestoreDocument<ClienteModel> {
-    return this.clientesRef.doc(identifier);
+  getById(identifier: string): Observable<any> {
+    return this.clientesRef.doc(identifier)
+    .snapshotChanges().pipe(
+      map((c)=> ({
+        ...c.payload.data(),
+        id: c.payload.id,
+      }))
+    );
   }
 
   save(clienteModel: ClienteModel): Promise<DocumentReference<ClienteModel>> {

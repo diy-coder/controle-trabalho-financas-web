@@ -25,7 +25,6 @@ export class ProjetoListaComponent implements OnInit {
   ];
 
   displayedColumns = [
-    { head: 'Cliente', el: 'cliente' },
     { head: 'Nome', el: 'nome' },
     { head: 'Descricao', el: 'descricao' },
     { head: 'Moeda', el: 'moeda' },

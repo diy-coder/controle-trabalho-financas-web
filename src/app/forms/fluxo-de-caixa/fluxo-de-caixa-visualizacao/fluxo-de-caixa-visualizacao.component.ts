@@ -1,8 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { DocumentChangeAction } from '@angular/fire/compat/firestore';
-import * as moment from 'moment';
-import { map } from 'rxjs';
-import { FluxoDeCaixaModel } from 'src/app/models/fluxoDeCaixaModel';
 import { LoadingService } from 'src/app/services/loading-service';
 import { FluxoDeCaixaService } from '../fluxo-de-caixa.service';
 
@@ -33,51 +29,12 @@ export class FluxoDeCaixaVisualizacaoComponent implements OnInit {
     setTimeout(() => {
       this.loadingService.setLoading(true);
     }, 0);
-    this.service
-      .getAll()
-      .snapshotChanges()
-      .pipe(
-        map((changes: DocumentChangeAction<FluxoDeCaixaModel>[]) =>
-          changes.map((c: DocumentChangeAction<FluxoDeCaixaModel>) => ({
-            id: c.payload.doc.id,
-            descricao: c.payload.doc.data().descricao,
-            tipoOperacao: c.payload.doc.data().tipoOperacao,
-            valor: c.payload.doc.data().valor,
-            data: c.payload.doc.data()
-              ? moment(
-                  (
-                    c.payload.doc.data()
-                      .data as unknown as firebase.default.firestore.Timestamp
-                  ).toDate()
-                ).format('DD/MM/YYYY')
-              : null,
-            reference: c.payload.doc.data()
-              ? moment(
-                  (
-                    c.payload.doc.data()
-                      .data as unknown as firebase.default.firestore.Timestamp
-                  ).toDate()
-                ).format('MMMM - YYYY')
-              : null,
-            style: c.payload.doc.data().tipoOperacao,
-            projeto: c.payload.doc.data().projeto,
-            group: c.payload.doc.data()
-              ? moment(
-                  (
-                    c.payload.doc.data()
-                      .data as unknown as firebase.default.firestore.Timestamp
-                  ).toDate()
-                ).format('YYYY-MM')
-              : 'UNGROUPED',
-          }))
-        )
-      )
-      .subscribe((data) => {
-        this.data = this.sumarize(data, 'group');
-        this.originalData = this.data;
-        this.monthValidOptions = this.data.map((d: any) => d.referencia);
-        this.loadingService.setLoading(false);
-      });
+    this.service.getAll().subscribe((data) => {
+      this.data = this.sumarize(data, 'group');
+      this.originalData = this.data;
+      this.monthValidOptions = this.data.map((d: any) => d.referencia);
+      this.loadingService.setLoading(false);
+    });
   }
 
   sumarize(list: any[], property: string) {

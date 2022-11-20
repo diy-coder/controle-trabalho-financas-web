@@ -139,8 +139,6 @@ export class SidebarComponent implements OnInit {
     return true;
   }
 
-  setEmpresaAtiva(empresa: any) {}
-
   logout() {
     this.userService.logout();
   }

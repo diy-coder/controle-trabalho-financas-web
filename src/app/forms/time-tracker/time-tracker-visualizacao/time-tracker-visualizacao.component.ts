@@ -1,13 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { DocumentChangeAction } from '@angular/fire/compat/firestore';
 
 import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridWeek from '@fullcalendar/timegrid';
 import * as moment from 'moment';
-import { map } from 'rxjs';
-import { TimeTrackerModel } from 'src/app/models/timeTrackerModel';
 import { LoadingService } from 'src/app/services/loading-service';
 import { TimeTrackerService } from '../time-tracker.service';
 @Component({
@@ -29,35 +26,12 @@ export class TimeTrackerVisualizacaoComponent implements OnInit {
       this.loadingService.setLoading(true);
     }, 0);
 
-    this.service
-      .getAll()
-      .snapshotChanges()
-      .pipe(
-        map((changes: DocumentChangeAction<TimeTrackerModel>[]) =>
-          changes.map((c: DocumentChangeAction<TimeTrackerModel>) => ({
-            id: c.payload.doc.id,
-            projeto: c.payload.doc.data().projeto,
-            timeSpent: c.payload.doc.data().timeSpent,
-            minutesTotalSpent: c.payload.doc.data().minutesTotalSpent,
-            dataInicio: this.getConvertedData(c.payload.doc.data().dataInicio),
-            dataTermino: this.getConvertedData(
-              c.payload.doc.data().dataTermino
-            ),
-          }))
-        )
-      )
-      .subscribe((data) => {
-        this.dadosAgrupados = this.loadData(data);
-        this.loadCalendar();
-        this.carregarEventos(this.dadosAgrupados);
-        this.loadingService.setLoading(false);
-      });
-  }
-
-  private getConvertedData(date: Date) {
-    return date
-      ? (date as unknown as firebase.default.firestore.Timestamp).toDate()
-      : null;
+    this.service.getAll().subscribe((data) => {
+      this.dadosAgrupados = this.loadData(data);
+      this.loadCalendar();
+      this.carregarEventos(this.dadosAgrupados);
+      this.loadingService.setLoading(false);
+    });
   }
 
   loadCalendar() {
@@ -87,13 +61,10 @@ export class TimeTrackerVisualizacaoComponent implements OnInit {
         day: 'Dia',
         list: 'Lista',
       },
-      eventClick: (args) => {},
       titleFormat: { year: 'numeric', month: 'short', day: 'numeric' },
-
       businessHours: {
         daysOfWeek: [1, 2, 3, 4, 5],
       },
-
       headerToolbar: {
         left: 'dayGridMonth,timeGridWeek,timeGridDay today',
         center: 'title',
@@ -102,8 +73,6 @@ export class TimeTrackerVisualizacaoComponent implements OnInit {
     });
     this.calendar.render();
   }
-
-  custonButton1Click() {}
 
   summary: any[] = [];
   presentSummary() {

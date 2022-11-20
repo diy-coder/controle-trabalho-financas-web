@@ -3,10 +3,13 @@ import {
   AngularFirestore,
   AngularFirestoreCollection,
   AngularFirestoreDocument,
+  DocumentChangeAction,
   DocumentReference,
 } from '@angular/fire/compat/firestore';
+import { map, Observable } from 'rxjs';
 import { TokenService } from 'src/app/core/token/token.service';
 import { TimeTrackerModel } from 'src/app/models/timeTrackerModel';
+import { DateTimeUtils } from 'src/app/utils/data-time.utils';
 
 @Injectable({ providedIn: 'root' })
 export class TimeTrackerService {
@@ -22,16 +25,39 @@ export class TimeTrackerService {
     );
   }
 
-  getAll(): AngularFirestoreCollection<TimeTrackerModel> {
-    return this.projetosRef;
+  getAll(): Observable<any> {
+    return this.projetosRef.snapshotChanges().pipe(
+      map((changes: DocumentChangeAction<TimeTrackerModel>[]) =>
+        changes.map((c: DocumentChangeAction<TimeTrackerModel>) => ({
+          id: c.payload.doc.id,
+          user_creation: c.payload.doc.data().user_creation,
+          projeto: c.payload.doc.data().projeto,
+          dataInicio: DateTimeUtils.firebaseDateToDate(
+            c.payload.doc.data().dataInicio
+          ),
+          dataTermino: DateTimeUtils.firebaseDateToDate(
+            c.payload.doc.data().dataTermino
+          ),
+          isNotFinished: !(
+            c.payload.doc.data().dataInicio && c.payload.doc.data().dataTermino
+          ),
+          timeSpent: c.payload.doc.data().timeSpent,
+        }))
+      )
+    );
   }
 
   getById(identifier: string): AngularFirestoreDocument<TimeTrackerModel> {
     return this.projetosRef.doc(identifier);
   }
 
-  save(timeTrackerModel: TimeTrackerModel): Promise<DocumentReference<TimeTrackerModel>> {
-    if (!timeTrackerModel.user_creation || timeTrackerModel.user_creation == '') {
+  save(
+    timeTrackerModel: TimeTrackerModel
+  ): Promise<DocumentReference<TimeTrackerModel>> {
+    if (
+      !timeTrackerModel.user_creation ||
+      timeTrackerModel.user_creation == ''
+    ) {
       timeTrackerModel.user_creation = this.userCreation;
     }
     return this.projetosRef.add({ ...timeTrackerModel });

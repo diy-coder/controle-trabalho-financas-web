@@ -1,11 +1,9 @@
 import { Component, NgZone, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EmailAuthProvider, GoogleAuthProvider } from 'firebase/auth';
 import 'firebase/compat/auth'; //v9
 import * as firebaseui from 'firebaseui';
 import { auth } from 'src/app/app.module';
-import { AuthService } from '../auth/auth.service';
 import { TokenService } from '../token/token.service';
 import { UserService } from '../user/user.service';
 
@@ -15,8 +13,6 @@ import { UserService } from '../user/user.service';
 })
 export class SigninComponent implements OnInit {
   constructor(
-    private formBuider: FormBuilder,
-    private authService: AuthService,
     private router: Router,
     private userService: UserService,
     private tokenService: TokenService,

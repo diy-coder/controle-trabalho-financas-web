@@ -34,7 +34,7 @@ export class NotificationService {
       },
       {
         type: type.toString(),
-        delay: 1000,
+        delay: 300,
         timer: 2000,
         placement: {
           from: "top",

@@ -1,8 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { DocumentChangeAction } from '@angular/fire/compat/firestore';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { map, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { LoadIconAroundInvoke } from 'src/app/decorators/load-icon.decorator';
 import { MustConfirm } from 'src/app/decorators/must-confirm.decorators';
 import { TipoOperacaoEnum } from 'src/app/enums/tipo-operacao.enum';
@@ -87,36 +86,14 @@ export class TimeTrackerCadastroComponent implements OnInit {
       this.projetoList$ = of(projetos);
     });
 
-    this.service
-      .getAll()
-      .snapshotChanges()
-      .pipe(
-        map((changes: DocumentChangeAction<TimeTrackerModel>[]) =>
-          changes.map((c: DocumentChangeAction<TimeTrackerModel>) => ({
-            id: c.payload.doc.id,
-            user_creation: c.payload.doc.data().user_creation,
-            projeto: c.payload.doc.data().projeto,
-            dataInicio: this.getConvertedData(c.payload.doc.data().dataInicio),
-            dataTermino: this.getConvertedData(
-              c.payload.doc.data().dataTermino
-            ),
-            isNotFinished: !(
-              c.payload.doc.data().dataInicio &&
-              c.payload.doc.data().dataTermino
-            ),
-            timeSpent: c.payload.doc.data().timeSpent,
-          }))
+    this.service.getAll().subscribe((data) => {
+      this.data$ = of(
+        data.sort(
+          (a: any, b: any) => b.dataInicio?.getTime() - a.dataInicio?.getTime()
         )
-      )
-      .subscribe((data) => {
-        this.data$ = of(
-          data.sort(
-            (a: any, b: any) =>
-              b.dataInicio?.getTime() - a.dataInicio?.getTime()
-          )
-        );
-        this.loadingService.setLoading(false);
-      });
+      );
+      this.loadingService.setLoading(false);
+    });
   }
 
   saveEntry() {
@@ -176,16 +153,14 @@ export class TimeTrackerCadastroComponent implements OnInit {
     this.fluxoDeCaixaForm.resetForm();
   }
 
-  calculateDifferenceBetweenTwoDates(timeTrackerModel: TimeTrackerModel) {
-    if (!timeTrackerModel.dataInicio || !timeTrackerModel.dataTermino) {
+  calculateDifferenceBetweenTwoDates(model: TimeTrackerModel) {
+    if (!model.dataInicio || !model.dataTermino) {
       return '';
     }
-    var diffMs =
-      timeTrackerModel.dataTermino.getTime() -
-      timeTrackerModel.dataInicio.getTime(); // milliseconds between now & Christmas
-    var diffDays = Math.floor(diffMs / 86400000); // days
-    var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
-    var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+    var diffMs = model.dataTermino.getTime() - model.dataInicio.getTime();
+    var diffDays = Math.floor(diffMs / 86400000);
+    var diffHrs = Math.floor((diffMs % 86400000) / 3600000);
+    var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);
     return diffDays + ' dias, ' + diffHrs + ' horas, ' + diffMins + ' minutos';
   }
 
@@ -197,12 +172,6 @@ export class TimeTrackerCadastroComponent implements OnInit {
       ) / 1000
     );
     return Math.floor(secs / 60);
-  }
-
-  private getConvertedData(date: Date) {
-    return date
-      ? (date as unknown as firebase.default.firestore.Timestamp).toDate()
-      : null;
   }
 
   private updateTimeSpent(timeTrackerModel: TimeTrackerModel) {
