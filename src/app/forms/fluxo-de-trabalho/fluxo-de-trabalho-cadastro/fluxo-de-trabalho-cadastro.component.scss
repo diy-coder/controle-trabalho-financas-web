@@ -18,3 +18,11 @@
   margin-top: 0px;
   padding-top: 0px;
 }
+
+::ng-deep.ENTRADA {
+  background-color: #31d7314f;
+}
+
+::ng-deep.SAIDA {
+  background-color: #ff1c1c91;
+}

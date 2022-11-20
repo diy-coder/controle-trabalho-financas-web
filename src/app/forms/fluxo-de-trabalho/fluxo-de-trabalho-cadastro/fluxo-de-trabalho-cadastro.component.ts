@@ -6,6 +6,7 @@ import { FluxoTrabalhoStatusEnum } from 'src/app/enums/status-fluxo-trabalho.enu
 import { LoadingService } from 'src/app/services/loading-service';
 import { NotificationService } from 'src/app/shared/notification/notification.service';
 import { ClienteService } from '../../clientes/clientes.service';
+import { FluxoDeCaixaService } from '../../fluxo-de-caixa/fluxo-de-caixa.service';
 import { FormCrudOpts } from '../../forms-super';
 import { ProjetoService } from '../../projetos/projetos.service';
 import { TimeTrackerService } from '../../time-tracker/time-tracker.service';
@@ -24,26 +25,40 @@ export class FluxoDeTrabalhoCadastroComponent
   identifier: any;
 
   projetoList$!: Observable<any>;
-  timeTracker$!: Observable<any>;
+  timeTrackerList$!: Observable<any>;
+  fluxoDeCaixaList$!: Observable<any>;
   clienteList$!: Observable<any>;
 
-  displayedColumns = [
+  displayedColumnsTimeTracker = [
     { head: 'Projeto', el: 'projeto' },
     { head: 'Data Início', el: 'dataInicio', format: { tipo: 'TIMESTAMP' } },
     { head: 'Data Término', el: 'dataTermino', format: { tipo: 'TIMESTAMP' } },
     { head: 'Tempo Gasto', el: 'timeSpent' },
   ];
 
+  displayedColumnsFluxoCaixa = [
+    { head: 'Data', el: 'data', format: { tipo: 'DATE' } },
+    { head: 'Descrição', el: 'descricao' },
+    { head: 'Tipo de Operação', el: 'tipoOperacao' },
+    {
+      head: 'valor',
+      el: 'valor',
+      format: { tipo: 'PIPE', pipe: 'currency', arguments: 'BRL' },
+    },
+    { head: 'Projeto', el: 'projeto' },
+  ];
+
   constructor(
+    service: FluxoDeTrabalhoService,
+    notificationService: NotificationService,
+    loadingService: LoadingService,
     private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
-    service: FluxoDeTrabalhoService,
-    notificationService: NotificationService,
     private projetoService: ProjetoService,
     private clienteService: ClienteService,
     private timeTrackerService: TimeTrackerService,
-    loadingService: LoadingService
+    private fluxoDeCaixaService: FluxoDeCaixaService
   ) {
     super(service, notificationService, loadingService);
   }
@@ -55,6 +70,7 @@ export class FluxoDeTrabalhoCadastroComponent
   }
 
   loadData(identifier: string | null) {
+    this.startLoading()
     this.projetoList$ = this.projetoService.getAll();
 
     this.clienteService.getAll().subscribe((data) => {
@@ -71,7 +87,9 @@ export class FluxoDeTrabalhoCadastroComponent
           if (formData) {
             this.formGroup.patchValue(formData);
             this.loadTimeTracker(formData.projeto);
+            this.loadFluxoDeCaixa(formData.projeto)
           }
+          this.stoptLoading()
         });
     }
   }
@@ -80,7 +98,19 @@ export class FluxoDeTrabalhoCadastroComponent
     this.timeTrackerService.getAll().subscribe((data) => {
       const filteredData = data.filter((item: any) => item.projeto == projeto);
 
-      this.timeTracker$ = of(
+      this.timeTrackerList$ = of(
+        filteredData.sort(
+          (a: any, b: any) => b.dataInicio?.getTime() - a.dataInicio?.getTime()
+        )
+      );
+    });
+  }
+
+  loadFluxoDeCaixa(projeto: string) {
+    this.fluxoDeCaixaService.getAll().subscribe((data) => {
+      const filteredData = data.filter((item: any) => item.projeto == projeto);
+
+      this.fluxoDeCaixaList$ = of(
         filteredData.sort(
           (a: any, b: any) => b.dataInicio?.getTime() - a.dataInicio?.getTime()
         )

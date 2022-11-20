@@ -249,14 +249,24 @@
                       ></app-upload>
                     </div>
                   </mat-tab>
+
                   <mat-tab label="Time Tracker">
                     <app-tabela
                       class="col-md-12"
-                      *ngIf="timeTracker$ | async as data"
-                      [displayedColumns]="displayedColumns"
+                      *ngIf="timeTrackerList$ | async as data"
+                      [displayedColumns]="displayedColumnsTimeTracker"
                       [dados]="data"
                       [showHeader]="false"
-                      (acaoSelecionada)="executarAcao($event)"
+                    ></app-tabela>
+                  </mat-tab>
+
+                  <mat-tab label="Fluxo de caixa">
+                    <app-tabela
+                      class="col-md-12"
+                      *ngIf="fluxoDeCaixaList$ | async as data"
+                      [displayedColumns]="displayedColumnsFluxoCaixa"
+                      [dados]="data"
+                      [showHeader]="false"
                     ></app-tabela>
                   </mat-tab>
                 </mat-tab-group>
