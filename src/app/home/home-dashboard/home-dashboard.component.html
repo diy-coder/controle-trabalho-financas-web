@@ -24,7 +24,7 @@
           <div class="row table-row" *ngFor="let item of data">
             <div class="col-md-3">{{ item.projeto }}</div>
             <div class="col-md-4">{{ item.cliente }}</div>
-            <div class="col-md-3">{{ item.status }}</div>
+            <div class="col-md-3">{{ item.statusString }}</div>
             <div class="col-md-2">
               {{ item.dataEntrega | date: "dd/MM/yyyy" }}
             </div>

@@ -3,37 +3,55 @@
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12">
         <app-home-dashboard
-          *ngIf="proximaEntregaList$ | async as dataEmitirPagamento"
           [titulo]="'Próximas Entregas'"
           [subTitulo]="
             'Lista de Próximas entregas com base no Fluxo de Trabalho que estejam EM ANDAMENTO'
           "
           [icone]="'event_note'"
-          [data]="dataEmitirPagamento"
+          [data]="proximaEntregaList"
           [classe]="'proximas-entregas'"
         ></app-home-dashboard>
       </div>
 
       <div class="col-lg-6 col-md-6 col-sm-6">
         <app-home-dashboard
-          *ngIf="emitirNfeList$ | async as dataEmitirNFe"
           [titulo]="'Emitir NF'"
           [subTitulo]="
             'Lista de Todos os projetos aguardando Emissão de Nota Fiscal'
           "
           [icone]="'receipt_long'"
-          [data]="dataEmitirNFe"
+          [data]="emitirNfeList"
           [classe]="'emitir-nf'"
         ></app-home-dashboard>
       </div>
 
       <div class="col-lg-6 col-md-6 col-sm-6">
         <app-home-dashboard
-          *ngIf="pagamentoAReceberList$ | async as dataPagamentoReceber"
+          [titulo]="'Em Aprovação'"
+          [subTitulo]="'Lista de Todos os projetos aguardando Aprovação'"
+          [icone]="'check_circle_outline'"
+          [data]="emAprovacaoList"
+          [classe]="'em-aprovacao'"
+        ></app-home-dashboard>
+      </div>
+
+      <div class="col-lg-6 col-md-6 col-sm-6">
+        <app-home-dashboard
           [titulo]="'Pagamentos a Receber'"
           [subTitulo]="'Lista de todos os Projetos aguardando pagamento'"
           [icone]="'attach_money'"
-          [data]="dataPagamentoReceber"
+          [data]="pagamentoAReceberList"
+          [classe]="'pagamento-a-receber'"
+        ></app-home-dashboard>
+      </div>
+
+      <div class="col-lg-6 col-md-6 col-sm-6">
+        <app-home-dashboard
+          [titulo]="'Pagamentos Atrasados'"
+          [subTitulo]="'Lista de todos os Projetos com Pagamento Atrasado'"
+          [icone]="'attach_money'"
+          [data]="pagamentoAtrasadoList"
+          [classe]="'pagamento-atrasado'"
         ></app-home-dashboard>
       </div>
     </div>

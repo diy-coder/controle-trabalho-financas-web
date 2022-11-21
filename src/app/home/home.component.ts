@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { DocumentChangeAction } from '@angular/fire/compat/firestore';
-import { map, Observable, of } from 'rxjs';
+import { map } from 'rxjs';
+import { FluxoTrabalhoStatusEnum } from '../enums/status-fluxo-trabalho.enum';
 import { FluxoDeTrabalhoService } from '../forms/fluxo-de-trabalho/fluxo-de-trabalho.service';
 import { FluxoDeTrabalhoModel } from '../models/fluxoDeTrabalhoModel';
+import { LoadingService } from '../services/loading-service';
 import { DateTimeUtils } from '../utils/data-time.utils';
 
 @Component({
@@ -13,9 +15,11 @@ import { DateTimeUtils } from '../utils/data-time.utils';
 export class HomeComponent implements OnInit {
   alldata: any[] = [];
 
-  proximaEntregaList$!: Observable<any>;
-  pagamentoAReceberList$!: Observable<any>;
-  emitirNfeList$!: Observable<any>;
+  proximaEntregaList!: any[];
+  pagamentoAReceberList!: any[];
+  emitirNfeList!: any[];
+  emAprovacaoList!: any[];
+  pagamentoAtrasadoList!: any[];
 
   displayedColumns = [
     { head: 'Nome', el: 'nome' },
@@ -28,9 +32,16 @@ export class HomeComponent implements OnInit {
     },
   ];
 
-  constructor(private fluxoTrabalhoService: FluxoDeTrabalhoService) {}
+  constructor(
+    private fluxoTrabalhoService: FluxoDeTrabalhoService,
+    private loadingService: LoadingService
+  ) {}
 
   ngOnInit(): void {
+    setTimeout(() => {
+      this.loadingService.setLoading(true);
+    }, 0);
+
     this.fluxoTrabalhoService
       .getAll()
       .snapshotChanges()
@@ -41,11 +52,14 @@ export class HomeComponent implements OnInit {
             cliente: c.payload.doc.data().cliente,
             projeto: c.payload.doc.data().projeto,
             pasta: c.payload.doc.data().linkArmazenamentoNuvem,
-            status: '' + c.payload.doc.data().status,
+            status: c.payload.doc.data().status,
+            statusString: this.getStatusDescription(
+              c.payload.doc.data().status
+            ),
             dataEntrega: DateTimeUtils.firebaseDateToDate(
               c.payload.doc.data().dataEntregaPrevista
             ),
-            projetoEntregue: c.payload.doc.data().projetoEntregue,
+            projetoEntregue: !!c.payload.doc.data().projetoEntregue,
             pagamentoRecebido: c.payload.doc.data().pagamentoRecebido,
             nfeEmitida: c.payload.doc.data().nfeEmitida ? true : false,
           }))
@@ -54,8 +68,12 @@ export class HomeComponent implements OnInit {
       .subscribe((entries) => {
         this.alldata = entries;
         this.loadProximasEntregas(entries);
-        this.loadPagamentoAReceber(entries);
         this.loadEmitirNFe(entries);
+        this.loadPagamentoAReceber(entries);
+        this.loadEmAprovacao(entries);
+        this.loadPagamentoAtrasado(entries);
+
+        this.loadingService.setLoading(false);
       });
   }
 
@@ -67,23 +85,45 @@ export class HomeComponent implements OnInit {
         !item.projetoEntregue
     );
 
-    this.proximaEntregaList$ = of(filteredItems);
-  }
-
-  loadPagamentoAReceber(data: any[]) {
-    const filteredItems = data.filter(
-      (item) =>
-        item.status == 'CONCLUIDO' &&
-        item.pagamentoRecebido == false &&
-        item.nfeEmitida == true
-    );
-    this.pagamentoAReceberList$ = of(filteredItems);
+    this.proximaEntregaList = filteredItems;
   }
 
   loadEmitirNFe(data: any[]) {
     const filteredItems = data.filter(
       (item) => item.status == 'CONCLUIDO' && item.nfeEmitida == false
     );
-    this.emitirNfeList$ = of(filteredItems);
+    this.emitirNfeList = filteredItems;
+  }
+
+  loadEmAprovacao(data: any[]) {
+    const filteredItems = data.filter(
+      (item) =>
+        item.status == 'AGUARDANDO_FEEDBACK' && item.projetoEntregue == false
+    );
+    this.emAprovacaoList = filteredItems;
+  }
+
+  loadPagamentoAReceber(data: any[]) {
+    const filteredItems = data.filter(
+      (item) => item.pagamentoRecebido == false && item.nfeEmitida == true
+    );
+    this.pagamentoAReceberList = filteredItems;
+  }
+
+  loadPagamentoAtrasado(data: any[]) {
+    const filteredItems = data.filter(
+      (item) =>
+        item.status == 'CONCLUIDO' &&
+        item.dataEntrega <= new Date() &&
+        !item.pagamentoRecebido
+    );
+    this.pagamentoAtrasadoList = filteredItems;
+  }
+
+  private getStatusDescription(status: FluxoTrabalhoStatusEnum) {
+    const filtered = Object.entries(FluxoTrabalhoStatusEnum).filter(
+      (i) => i[0] == status
+    )[0];
+    return filtered[1];
   }
 }
