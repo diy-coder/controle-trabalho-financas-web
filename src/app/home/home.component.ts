@@ -15,6 +15,7 @@ export class HomeComponent implements OnInit {
 
   proximaEntregaList$!: Observable<any>;
   pagamentoAReceberList$!: Observable<any>;
+  emitirNfeList$!: Observable<any>;
 
   displayedColumns = [
     { head: 'Nome', el: 'nome' },
@@ -44,6 +45,9 @@ export class HomeComponent implements OnInit {
             dataEntrega: DateTimeUtils.firebaseDateToDate(
               c.payload.doc.data().dataEntregaPrevista
             ),
+            projetoEntregue: c.payload.doc.data().projetoEntregue,
+            pagamentoRecebido: c.payload.doc.data().pagamentoRecebido,
+            nfeEmitida: c.payload.doc.data().nfeEmitida ? true : false,
           }))
         )
       )
@@ -51,16 +55,35 @@ export class HomeComponent implements OnInit {
         this.alldata = entries;
         this.loadProximasEntregas(entries);
         this.loadPagamentoAReceber(entries);
+        this.loadEmitirNFe(entries);
       });
   }
 
   loadProximasEntregas(data: any[]) {
-    const filteredItems = data.filter((item) => item.status == 'EM_ANDAMENTO');
+    const filteredItems = data.filter(
+      (item) =>
+        item.status == 'EM_ANDAMENTO' &&
+        item.dataEntrega >= new Date() &&
+        !item.projetoEntregue
+    );
+
     this.proximaEntregaList$ = of(filteredItems);
   }
 
   loadPagamentoAReceber(data: any[]) {
-    const filteredItems = data.filter((item) => item.status == 'CONCLUIDO');
+    const filteredItems = data.filter(
+      (item) =>
+        item.status == 'CONCLUIDO' &&
+        item.pagamentoRecebido == false &&
+        item.nfeEmitida == true
+    );
     this.pagamentoAReceberList$ = of(filteredItems);
+  }
+
+  loadEmitirNFe(data: any[]) {
+    const filteredItems = data.filter(
+      (item) => item.status == 'CONCLUIDO' && item.nfeEmitida == false
+    );
+    this.emitirNfeList$ = of(filteredItems);
   }
 }

@@ -77,7 +77,7 @@ export class FluxoDeTrabalhoCadastroComponent
     });
 
     if (identifier && identifier != '0') {
-      this.startLoading()
+      this.startLoading();
       this.service
         .getById('' + identifier)
         .snapshotChanges()
@@ -87,9 +87,9 @@ export class FluxoDeTrabalhoCadastroComponent
           if (formData) {
             this.formGroup.patchValue(formData);
             this.loadTimeTracker(formData.projeto);
-            this.loadFluxoDeCaixa(formData.projeto)
+            this.loadFluxoDeCaixa(formData.projeto);
           }
-          this.stoptLoading()
+          this.stoptLoading();
         });
     }
   }
@@ -157,6 +157,8 @@ export class FluxoDeTrabalhoCadastroComponent
       totalRecebido: [],
       observacoes: [],
       linkArmazenamentoNuvem: [],
+      projetoEntregue: [],
+      nfeEmitida: [],
     });
   }
 }

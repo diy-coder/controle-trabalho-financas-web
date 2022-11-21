@@ -20,10 +20,10 @@ export interface FluxoDeTrabalhoModel {
   dificuldade: number;
   observacoes: string;
   linkArmazenamentoNuvem: string;
-
-
   projetoEntregue: boolean;
   nfeEmitida: boolean;
+
+
   tempoGastoEmMinutos: number;
   valorPorHora: number;
 }
