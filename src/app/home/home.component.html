@@ -2,139 +2,39 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12">
-        <div class="card card-stats">
-          <div class="card-header card-header-warning card-header-icon">
-            <div class="card-icon">
-              <i class="material-icons">event_note</i>
-            </div>
-            <p class="card-category">
-              Lista de Próximas entregas com base no Fluxo de Trabalho que
-              estejam EM ANDAMENTO
-            </p>
-            <h3 class="card-title">
-              Próximas Entregas
-              <small></small>
-            </h3>
-          </div>
-          <div class="card-body">
-            <div *ngIf="proximaEntregaList$ | async as data">
-              <div class="content">
-                <div class="list-transaction">
-                  <div class="row background-default">
-                    <div class="col-md-2">Projeto</div>
-                    <div class="col-md-2">Cliente</div>
-                    <div class="col-md-2">Status</div>
-                    <div class="col-md-2">Data</div>
-                  </div>
-                  <div class="row table-row" *ngFor="let item of data">
-                    <div class="col-md-2">{{ item.projeto }}</div>
-                    <div class="col-md-2">{{ item.cliente }}</div>
-                    <div class="col-md-2">{{ item.status }}</div>
-                    <div class="col-md-2">
-                      {{ item.dataEntrega | date: "dd/MM/yyyy" }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="card-footer" *ngIf="false">
-            <div class="stats">
-              <i class="material-icons text-danger">warning</i>
-              <a href="javascript:void(0)">Info/Warning about the chart</a>
-            </div>
-          </div>
-        </div>
+        <app-home-dashboard
+          *ngIf="proximaEntregaList$ | async as dataEmitirPagamento"
+          [titulo]="'Próximas Entregas'"
+          [subTitulo]="
+            'Lista de Próximas entregas com base no Fluxo de Trabalho que estejam EM ANDAMENTO'
+          "
+          [icone]="'event_note'"
+          [data]="dataEmitirPagamento"
+          [classe]="'proximas-entregas'"
+        ></app-home-dashboard>
       </div>
 
       <div class="col-lg-6 col-md-6 col-sm-6">
-        <div class="card card-stats">
-          <div class="card-header card-header-info card-header-icon ">
-            <div class="card-icon emitir-nf">
-              <i class="material-icons">receipt_long</i>
-            </div>
-            <p class="card-category">
-              Lista de Todos os projetos aguardando Emissão de Nota Fiscal
-            </p>
-            <h3 class="card-title">
-              Emitir NF
-              <small></small>
-            </h3>
-          </div>
-          <div class="card-body">
-            <div *ngIf="emitirNfeList$ | async as data">
-              <div class="content">
-                <div class="list-transaction">
-                  <div class="row background-default">
-                    <div class="col-md-3">Projeto</div>
-                    <div class="col-md-4">Cliente</div>
-                    <div class="col-md-3">Status</div>
-                    <div class="col-md-2">Data</div>
-                  </div>
-                  <div class="row table-row" *ngFor="let item of data">
-                    <div class="col-md-3">{{ item.projeto }}</div>
-                    <div class="col-md-4">{{ item.cliente }}</div>
-                    <div class="col-md-3">{{ item.status }}</div>
-                    <div class="col-md-2">
-                      {{ item.dataEntrega | date: "dd/MM/yyyy" }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="card-footer" *ngIf="false">
-            <div class="stats">
-              <i class="material-icons text-danger">warning</i>
-              <a href="javascript:void(0)">Info/Warning about the chart</a>
-            </div>
-          </div>
-        </div>
+        <app-home-dashboard
+          *ngIf="emitirNfeList$ | async as dataEmitirNFe"
+          [titulo]="'Emitir NF'"
+          [subTitulo]="
+            'Lista de Todos os projetos aguardando Emissão de Nota Fiscal'
+          "
+          [icone]="'receipt_long'"
+          [data]="dataEmitirNFe"
+          [classe]="'emitir-nf'"
+        ></app-home-dashboard>
       </div>
 
       <div class="col-lg-6 col-md-6 col-sm-6">
-        <div class="card card-stats">
-          <div class="card-header card-header-info card-header-icon">
-            <div class="card-icon">
-              <i class="material-icons">attach_money</i>
-            </div>
-            <p class="card-category">
-              Lista de todos os Projetos aguardando pagamento
-            </p>
-            <h3 class="card-title">
-              Pagamentos a Receber
-              <small></small>
-            </h3>
-          </div>
-          <div class="card-body">
-            <div *ngIf="pagamentoAReceberList$ | async as data">
-              <div class="content">
-                <div class="list-transaction">
-                  <div class="row background-default">
-                    <div class="col-md-3">Projeto</div>
-                    <div class="col-md-4">Cliente</div>
-                    <div class="col-md-3">Status</div>
-                    <div class="col-md-2">Data</div>
-                  </div>
-                  <div class="row table-row" *ngFor="let item of data">
-                    <div class="col-md-3">{{ item.projeto }}</div>
-                    <div class="col-md-4">{{ item.cliente }}</div>
-                    <div class="col-md-3">{{ item.status }}</div>
-                    <div class="col-md-2">
-                      {{ item.dataEntrega | date: "dd/MM/yyyy" }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="card-footer" *ngIf="false">
-            <div class="stats">
-              <i class="material-icons text-danger">warning</i>
-              <a href="javascript:void(0)">Info/Warning about the chart</a>
-            </div>
-          </div>
-        </div>
+        <app-home-dashboard
+          *ngIf="pagamentoAReceberList$ | async as dataPagamentoReceber"
+          [titulo]="'Pagamentos a Receber'"
+          [subTitulo]="'Lista de todos os Projetos aguardando pagamento'"
+          [icone]="'attach_money'"
+          [data]="dataPagamentoReceber"
+        ></app-home-dashboard>
       </div>
     </div>
   </div>

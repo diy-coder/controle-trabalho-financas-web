@@ -1,0 +1,42 @@
+<div class="card card-stats">
+  <div class="card-header card-header-info card-header-icon">
+    <div [ngClass]="'card-icon ' + classe">
+      <i class="material-icons">{{ icone }}</i>
+    </div>
+    <p class="card-category">
+      {{ subTitulo }}
+    </p>
+    <h3 class="card-title">
+      {{ titulo }}
+      <small></small>
+    </h3>
+  </div>
+  <div class="card-body">
+    <div>
+      <div class="content-fluid">
+        <div class="list-transaction">
+          <div class="row background-default">
+            <div class="col-md-3">Projeto</div>
+            <div class="col-md-4">Cliente</div>
+            <div class="col-md-3">Status</div>
+            <div class="col-md-2">Data</div>
+          </div>
+          <div class="row table-row" *ngFor="let item of data">
+            <div class="col-md-3">{{ item.projeto }}</div>
+            <div class="col-md-4">{{ item.cliente }}</div>
+            <div class="col-md-3">{{ item.status }}</div>
+            <div class="col-md-2">
+              {{ item.dataEntrega | date: "dd/MM/yyyy" }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer" *ngIf="showFooter">
+    <div class="stats">
+      <i class="material-icons text-danger">warning</i>
+      <a href="javascript:void(0)">{{ footer }}</a>
+    </div>
+  </div>
+</div>
